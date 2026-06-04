@@ -1,0 +1,41 @@
+﻿@model WebDocViewModel
+
+<form method="post">
+
+	@Html.AntiForgeryToken()
+
+	@Html.HiddenFor(m => m.Id)	
+	@Html.HiddenFor(m => m.ProtectedId)	
+
+	<textarea id="Content" name="Content">@Model.Content</textarea>
+
+	<button type="submit" class="btn btn-primary mt-3" asp-controller="Tiny5" asp-action="Save">
+		Kaydet
+	</button>
+</form>
+
+@section Scripts {
+
+	<script src="@Url.Content("~/lib/tinymce5/tinymce.min.js")"></script>
+
+	<script src="@Url.Content("~/js/tinymce-ext.js")"></script>
+
+	<script>
+
+		const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+		// tinymce-ext.js
+
+		tinymce.init({
+		...tinyBaseConfig,
+		...tinyMenuConfig,
+		...tinyPluginConfig,
+		...tinyToolbarConfig,
+		...tinyAutoImageUpload,
+		...tinyFilePicker,
+		...tinyFunctionSetup,
+		...tinyCodeSampleLanguages,
+		});	
+
+	</script>
+}

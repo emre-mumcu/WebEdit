@@ -1,0 +1,35 @@
+.special-elite {
+	font-family: "Special Elite", system-ui;
+	font-weight: 400;
+	font-style: normal;
+}
+
+.winky-rough {
+	font-family: "Winky Rough", sans-serif;
+	font-optical-sizing: auto;
+	font-weight: 400;
+	font-style: normal;
+}
+
+.sour-gummy {
+	font-family: "Sour Gummy", sans-serif;
+	font-optical-sizing: auto;
+	font-weight: 400;
+	font-style: normal;
+	font-variation-settings:
+		"wdth" 100;
+}
+
+.amarante {
+	font-family: "Amarante", serif;
+	font-weight: 400;
+	font-style: normal;
+}
+
+.stick-no-bills {
+	font-family: "Stick No Bills", sans-serif;
+	font-optical-sizing: auto;
+	font-weight: 400;
+	font-style: normal;
+}
+
