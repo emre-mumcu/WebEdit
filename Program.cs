@@ -10,10 +10,8 @@ builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlite("Data S
 
 // builder.Services.AddSingleton<IEncryptionService, AesGcmEncryptionService>();
 
-builder.Services.AddSingleton<IEncryptionService>(sp =>
-{
-	return new AesGcmEncryptionService("BenimGizliParolam");
-});
+builder.Services.AddSingleton<IEncryptionService>(sp => new AesGcmEncryptionService("BenimGizliParolam"));
+
 
 builder.Services.AddDataProtection();
 

@@ -1,12 +1,12 @@
-﻿@inject IWebHostEnvironment webHostEnvironment
+﻿@inject IWebHostEnvironment WebHostEnvironment
 
 @functions {
-	public List<string> GetPrismStyles()
-	{
-		var wwwroot = webHostEnvironment.WebRootPath;
 
-		List<string> cssFiles = Directory.GetFiles(System.IO.Path.Combine(wwwroot,
-"lib/prismjs/themes"), "*.css")
+	private List<string> GetPrismStyles()
+	{
+		var wwwroot = WebHostEnvironment.WebRootPath;
+
+		var cssFiles = Directory.GetFiles(System.IO.Path.Combine(wwwroot, "lib/prismjs/themes"), "*.css")
 			.Select(System.IO.Path.GetFileNameWithoutExtension)
 			.OfType<string>()
 			// .Select(x => x[3..])
@@ -14,30 +14,30 @@
 
 		return cssFiles;
 	}
+
 }
 
 <div class="dropdown mx-2">
-<a class="btn btn-warning btn-sm dropdown-toggle pt-2 mb-2" href="#" role="button" data-bs-toggle="dropdown"
-	aria-expanded="false">
-		<i class="bi bi-marker-tip"></i>  Code Style
+	<a class="btn btn-warning btn-sm dropdown-toggle pt-2 mb-2" href="#" role="button" data-bs-toggle="dropdown"
+	   aria-expanded="false">
+		<i class="bi bi-marker-tip"></i> Code Style
 	</a>
 
 	<ul class="prism-dropdown dropdown-menu">
 		<li>
 			<h6 class="dropdown-header">Style List</h6>
 		</li>
-		@foreach (string s in GetPrismStyles())
+		@foreach (var s in GetPrismStyles())
 		{
-			<li><a id="prism-theme-@s" class="dropdown-item" href="javascript:void(0);"
-						onclick="ChangePrismTheme(this.textContent)">@s</a></li>
+			<li><a id="prism-theme-@s" class="dropdown-item" href="javascript:void(0);" onclick="ChangePrismTheme(this.textContent)">@s</a></li>
 		}
 	</ul>
 </div>
 
 <style>
-		.dropdown-menu.show {
-			display: grid !important;
-			grid-template-columns: repeat(3, 1fr);
-			min-width: 400px;
-		}
+	.dropdown-menu.show {
+		display: grid !important;
+		grid-template-columns: repeat(3, 1fr);
+		min-width: 400px;
+	}
 </style>

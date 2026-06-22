@@ -1,16 +1,15 @@
-﻿@inject IWebHostEnvironment webHostEnvironment
+﻿@inject IWebHostEnvironment WebHostEnvironment
 
 @functions {
-	public List<string> GetBootswatchStyles()
+
+	private List<string> GetBootswatchStyles()
 	{
-		var wwwroot = webHostEnvironment.WebRootPath;
+		var wwwroot = WebHostEnvironment.WebRootPath;
 
-		List<DirectoryInfo> dirs = new DirectoryInfo(System.IO.Path.Combine(wwwroot,
-"lib/bootswatch")).GetDirectories().ToList();
+		var dirs = new DirectoryInfo(System.IO.Path.Combine(wwwroot, "lib/bootswatch")).GetDirectories().ToList();
 		return dirs.Select(i => i.Name).ToList();
-
-		
 	}
+
 }
 
 <div class="dropdown mx-2">
@@ -23,18 +22,19 @@
 		<li>
 			<h6 class="dropdown-header">Style List</h6>
 		</li>
-		@foreach (string s in GetBootswatchStyles())
+		@foreach (var s in GetBootswatchStyles())
 		{
 			<li><a id="bw-theme-@s" class="dropdown-item" href="javascript:void(0);"
-					   onclick="ChangeBootswatchTheme(this.textContent)">@s</a></li>
-			}
-		</ul>
-	</div>
-
-	<style>
-		.bw-dropdown.dropdown-menu.show {
-			display: grid !important;
-			grid-template-columns: repeat(3, 1fr);
-			min-width: 400px;
+			       onclick="ChangeBootswatchTheme(this.textContent)">@s</a></li>
 		}
-	</style>
+	</ul>
+</div>
+
+<style>
+	.bw-dropdown.dropdown-menu.show {
+		display: grid !important;
+		grid-template-columns: repeat(3, 1fr);
+		min-width: 400px;
+	}
+
+</style>
