@@ -14,9 +14,9 @@
 }
 
 <div class="dropdown mx-2">
-<a class="btn btn-warning btn-sm dropdown-toggle pt-2 mb-2" href="#" role="button" data-bs-toggle="dropdown"
-	aria-expanded="false">
-		<i class="bi bi-marker-tip"></i>  UI Style
+	<a class="btn btn-warning btn-sm dropdown-toggle pt-2 mb-2" href="#" role="button" data-bs-toggle="dropdown"
+	   aria-expanded="false">
+		<i class="bi bi-marker-tip"></i> UI Style
 	</a>
 
 	<ul class="bw-dropdown dropdown-menu">
@@ -27,14 +27,14 @@
 		{
 			<li><a id="bw-theme-@s" class="dropdown-item" href="javascript:void(0);"
 					   onclick="ChangeBootswatchTheme(this.textContent)">@s</a></li>
-		}
-	</ul>
-</div>
+			}
+		</ul>
+	</div>
 
-<style>
+	<style>
 		.bw-dropdown.dropdown-menu.show {
 			display: grid !important;
 			grid-template-columns: repeat(3, 1fr);
 			min-width: 400px;
 		}
-</style>
+	</style>
