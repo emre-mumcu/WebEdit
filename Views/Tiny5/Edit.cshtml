@@ -1,17 +1,37 @@
 ﻿@model WebDocViewModel
 
+<h2><span class="fs-6 text-muted">Default Editor</span></h2>
+
 <form method="post">
 
 	@Html.AntiForgeryToken()
 	@Html.HiddenFor(m => m.Id)
 	@Html.HiddenFor(m => m.ProtectedId)
 
+	<div class="row mb-3">
+		<label asp-for="Title" class="col-sm-2 col-form-label"></label>
+		<div class="col-sm-10">
+			<input asp-for="Title" class="form-control" />
+			<span asp-validation-for="Title"></span>
+		</div>
+	</div>
+
+	<div class="row mb-3">
+		<label asp-for="Tags" class="col-sm-2 col-form-label"></label>
+		<div class="col-sm-10">
+			<input asp-for="Tags" class="form-control" />
+			<span asp-validation-for="Tags"></span>
+		</div>
+	</div>
+
 	<textarea id="Content" name="Content">@Model.Content</textarea>
 
-	<button type="submit" class="btn btn-primary mt-3" asp-controller="Tiny5Default" asp-action="Save">
+	<button type="submit" class="btn btn-primary mt-3" asp-controller="Tiny5" asp-action="Save">
 		Kaydet
 	</button>
 </form>
+
+<p class="small text-muted my-4">@Model.ProtectedId</p>
 
 @section Scripts {
 

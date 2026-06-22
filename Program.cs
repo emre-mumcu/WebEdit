@@ -29,6 +29,10 @@ builder.Services.AddSession(options =>
 
 builder.Services.AddDataProtection();
 
+builder.Services.AddAuthentication();
+
+builder.Services.AddAuthorization();
+
 var app = builder.Build();
 
 app.UseSession();
@@ -38,6 +42,10 @@ app.UseStaticFiles();
 app.MapControllers(); // API + attribute routing
 
 app.MapDefaultControllerRoute(); // MVC Views
+
+app.UseAuthentication();
+
+app.UseAuthorization();
 
 using var scope = app.Services.CreateScope();
 var services = scope.ServiceProvider;

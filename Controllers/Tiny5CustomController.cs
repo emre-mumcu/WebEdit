@@ -9,9 +9,9 @@ using WebEdit.ViewModels;
 
 namespace WebEdit.Controllers
 {
-    public class Tiny5Custom(AppDbContext db, IDataProtectionProvider provider, ILogger<Tiny5Controller> logger, IEncryptionService encryption) : Controller
+    public class Tiny5CustomController(AppDbContext db, IDataProtectionProvider provider, ILogger<Tiny5Controller> logger, IEncryptionService encryption) : Controller
     {
-		private readonly IDataProtector _protector = provider.CreateProtector(nameof(Tiny5Custom));
+		private readonly IDataProtector _protector = provider.CreateProtector(nameof(Tiny5CustomController));
 
 		public async Task<ActionResult> Index()
 		{
@@ -28,7 +28,45 @@ namespace WebEdit.Controllers
 		}
 
 		[HttpGet("[controller]/[action]/{protectedId?}")]
-		public async Task<ActionResult> Editor(string? protectedId)
+		public async Task<ActionResult> ViewContent(string? protectedId)
+		{
+			if (string.IsNullOrEmpty(protectedId)) return RedirectToAction("Index");
+			else
+			{
+				string id = _protector.Unprotect(protectedId);
+
+				WebDocEntity? wd = await db.WebDocs.FindAsync(Guid.Parse(id));
+
+				WebDocViewModel? model = wd.Adapt<WebDocViewModel>();
+
+				model?.ProtectedId = protectedId;
+
+				return View(model);
+			}
+		}
+
+		[HttpGet("[controller]/[action]/{protectedId?}")]
+		public async Task<ActionResult> Delete(string? protectedId)
+		{
+			if (string.IsNullOrEmpty(protectedId)) return RedirectToAction("Index");
+			else
+			{
+				string id = _protector.Unprotect(protectedId);
+
+				WebDocEntity? wd = await db.WebDocs.FindAsync(Guid.Parse(id));
+
+				if (wd != null)
+				{
+					db.WebDocs.Remove(wd);
+					await db.SaveChangesAsync();
+				}
+
+				return RedirectToAction("Index");
+			}
+		}
+
+		[HttpGet("[controller]/[action]/{protectedId?}")]
+		public async Task<ActionResult> Edit(string? protectedId)
 		{
 			if (protectedId is null)
 			{
@@ -68,7 +106,7 @@ namespace WebEdit.Controllers
 
 			await db.SaveChangesAsync();
 
-			return View(viewName: "Editor", model: model);
+			return View(viewName: "Edit", model: model);
 		}
 
 	}

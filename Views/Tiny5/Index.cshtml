@@ -1,45 +1,61 @@
 ﻿@model List<WebDocViewModel>
 
-<h2>Web Documents</h2>
+<h2>Web Documents <span class="fs-6 text-muted">Default Editor</span></h2>
 
-<table class="table table-striped table-hover">
+<a asp-action="Edit">Yeni</a>
 
-	<thead>
-		<tr>
-			<th>ID</th>
-			<th>Title</th>
-			<th>Content</th>			
-			<th>Tags</th>
-			<th>Source</th>
-			<th>View Count</th>
-			<th>CreatedAt</th>
-			<th>UpdatedAt</th>
-			<th>CreatedBy</th>
-			<th>UpdatedBy</th>
-		</tr>
-	</thead>
+@if (Model.Count > 0)
+{
+	<div class="table-responsive">
 
-	<tbody>
-		@foreach (var item in Model)
-		{
-			<tr>
-				<td><a asp-controller="Tiny5" asp-action="Editor" asp-route-protectedId="@item.ProtectedId">@item.Id</a>
-				</td>
-				<td>@item.Title</td>
-				<td>
-					<div style="max-height:120px; overflow:auto;">
-						@Html.Raw(item.Content)
-					</div>
-				</td>
-				<td>@item.Tags</td>
-				<td>@item.Source</td>
-				<td>@item.ViewCount</td>
-				<td>@item.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
-				<td>@item.UpdatedAt?.ToString("yyyy-MM-dd HH:mm")</td>
-				<td>@item.CreatedBy</td>
-				<td>@item.UpdatedBy</td>
-			</tr>
-		}
-	</tbody>
+		<table class="table table-striped table-hover">
 
-</table>
+			<thead>
+				<tr>
+					<th></th>
+					<th>ID</th>
+					<th>Title</th>
+					<th>Tags</th>
+					<th>Source</th>
+					<th>View Count</th>
+					<th>CreatedAt</th>
+					<th>UpdatedAt</th>
+					<th>CreatedBy</th>
+					<th>UpdatedBy</th>
+				</tr>
+			</thead>
+
+			<tbody>
+				@foreach (var item in Model)
+				{
+					<tr>
+						<td>
+							<a class="d-block" asp-action="ViewContent" asp-route-protectedId="@item.ProtectedId"><i
+								class="bi bi-eye"></i></a>
+								<a class="d-block" asp-action="Edit" asp-route-protectedId="@item.ProtectedId"><i
+									class="bi bi-pencil"></i></a>
+									<a class="d-block" asp-action="Delete" asp-route-protectedId="@item.ProtectedId"><i
+										class="bi bi-trash"></i></a>
+									</td>
+									<td>@item.Id</td>
+									<td>@item.Title</td>
+									<td>@item.Tags</td>
+									<td>@item.Source</td>
+									<td>@item.ViewCount</td>
+									<td>@item.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+									<td>@item.UpdatedAt?.ToString("yyyy-MM-dd HH:mm")</td>
+									<td>@item.CreatedBy</td>
+									<td>@item.UpdatedBy</td>
+								</tr>
+							}
+						</tbody>
+
+					</table>
+
+				</div>
+			}
+else
+			{
+				<p>No Records!</p>
+			}
+

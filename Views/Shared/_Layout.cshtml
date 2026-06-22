@@ -12,16 +12,17 @@
 
 <body class="special-elite">
 
-	<div class="container py-3">
+	<div class="container-lg py-3">
 		<header>
 			<div class="d-flex flex-column flex-md-row align-items-center pb-3 mb-4 border-bottom">
 				<a href="/" class="link-body-emphasis text-decoration-none">
 					<span class="fs-4">Web Documents</span>
+					<partial name="_PrismTheme" />
+					<partial name="_Bootswatch" />
 				</a>
 				<nav class="d-inline-flex mt-2 mt-md-0 ms-md-auto">					
-					<a class="me-3 py-2 link-body-emphasis text-decoration-none" asp-controller="Tiny5Default" asp-action="Editor">DefaultEditor</a>
-					<a class="me-3 py-2 link-body-emphasis text-decoration-none" asp-controller="Tiny5Custom" asp-action="Editor">Custom Editor</a>
-					<a class="me-3 py-2 link-body-emphasis text-decoration-none" asp-controller="Tiny5" asp-action="Editor">Full Editor</a>
+					<a class="me-3 py-2 link-body-emphasis text-decoration-none" asp-controller="Tiny5" asp-action="Index">Default Editor</a>
+					<a class="me-3 py-2 link-body-emphasis text-decoration-none" asp-controller="Tiny5Custom" asp-action="Index">Custom Editor</a>					
 					<select id="imageMode">
 						<option value="" selected disabled>Seçiniz</option>
 						<option value="server">[Server Upload]</option>
