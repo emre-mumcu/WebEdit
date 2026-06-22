@@ -19,4 +19,9 @@
 		</PackageReference>
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="AppLib\" />
+	  <Folder Include="Views\Tiny5Custom\" />
+	</ItemGroup>
+
 </Project>

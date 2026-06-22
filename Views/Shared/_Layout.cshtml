@@ -20,7 +20,13 @@
 				</a>
 				<nav class="d-inline-flex mt-2 mt-md-0 ms-md-auto">					
 					<a class="me-3 py-2 link-body-emphasis text-decoration-none" asp-controller="Tiny5Default" asp-action="Editor">DefaultEditor</a>
-					<a class="me-3 py-2 link-body-emphasis text-decoration-none" asp-controller="Tiny5" asp-action="Editor">Editor</a>
+					<a class="me-3 py-2 link-body-emphasis text-decoration-none" asp-controller="Tiny5Custom" asp-action="Editor">Custom Editor</a>
+					<a class="me-3 py-2 link-body-emphasis text-decoration-none" asp-controller="Tiny5" asp-action="Editor">Full Editor</a>
+					<select id="imageMode">
+						<option value="" selected disabled>Seçiniz</option>
+						<option value="server">[Server Upload]</option>
+						<option value="base64">Base64</option>
+					</select>
 				</nav>
 			</div>
 		</header>
@@ -31,6 +37,22 @@
 
 	<partial name="_Scripts" />
 	@await RenderSectionAsync("Scripts", required: false)
+
+	<script>
+			const select = document.getElementById('imageMode');
+
+			const saved = localStorage.getItem('imageUploadMode');
+
+
+
+			if (saved) {
+				select.value = saved;
+			}
+			document.getElementById('imageMode').addEventListener('change', e => {
+				localStorage.setItem('imageUploadMode', e.target.value);
+				select.value = e.target.value;
+			});
+	</script>
 
 </body>
 

@@ -11,6 +11,7 @@ dotnet new gitignore
 ```
 
 Add the following to the .gitignore file:
+
 ```text
 # SQLite Database
 *.db
@@ -89,7 +90,15 @@ npm init -y
 npm install tinymce
 ```
 
+# Certificate Error
 
+dotnet dev-certs https --check
+dotnet dev-certs https --check --verbose
+dotnet dev-certs https --clean
+dotnet dev-certs https --trust
+
+Sertifikayı dışa aktar:
+dotnet dev-certs https -ep "%USERPROFILE%\Desktop\aspnetcore.pfx" -p 123456
 
 # Packages
 
