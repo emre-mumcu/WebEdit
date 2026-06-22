@@ -1,35 +1,8 @@
-.special-elite {
-	font-family: "Special Elite", system-ui;
-	font-weight: 400;
-	font-style: normal;
+.jumbotron {
+	background: var(--bs-primary-bg-subtle);
+	padding: 60px 40px;
+	text-align: center;
+	border-radius: 10px;
 }
-
-.winky-rough {
-	font-family: "Winky Rough", sans-serif;
-	font-optical-sizing: auto;
-	font-weight: 400;
-	font-style: normal;
-}
-
-.sour-gummy {
-	font-family: "Sour Gummy", sans-serif;
-	font-optical-sizing: auto;
-	font-weight: 400;
-	font-style: normal;
-	font-variation-settings:
-		"wdth" 100;
-}
-
-.amarante {
-	font-family: "Amarante", serif;
-	font-weight: 400;
-	font-style: normal;
-}
-
-.stick-no-bills {
-	font-family: "Stick No Bills", sans-serif;
-	font-optical-sizing: auto;
-	font-weight: 400;
-	font-style: normal;
-}
-
+.jumbotron h1 { font-size: 36px; color: var(--bs-primary-text-emphasis); margin: 0 0 12px; }
+.jumbotron p  { font-size: 17px; color: var(--bs-secondary-text-emphasis); margin: 0 0 24px; }

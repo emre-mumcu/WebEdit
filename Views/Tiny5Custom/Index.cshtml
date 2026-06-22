@@ -1,14 +1,16 @@
 ﻿@model List<WebDocViewModel>
 
-<h2>Web Documents <span class="fs-6 text-muted">Custom Editor</span></h2>
+<h2>Custom Editor</h2>
 
-<a asp-action="Edit">Yeni</a>
+@if (Model.Count > 0)
+{
+	<a asp-action="Edit">Yeni</a>
 
-<div class="table-responsive">
+	<div class="table-responsive">
 
-	<table class="table table-striped table-hover">
+		<table class="table table-striped table-hover">
 
-		<thead>
+			<thead>
 			<tr>
 				<th></th>
 				<th>ID</th>
@@ -21,33 +23,45 @@
 				<th>CreatedBy</th>
 				<th>UpdatedBy</th>
 			</tr>
-		</thead>
+			</thead>
 
-		<tbody>
+			<tbody>
 			@foreach (var item in Model)
 			{
 				<tr>
 					<td>
-						<a class="d-block" asp-action="ViewContent" asp-route-protectedId="@item.ProtectedId"><i
-							class="bi bi-eye"></i></a>
-							<a class="d-block" asp-action="Edit" asp-route-protectedId="@item.ProtectedId"><i
+						<a class="d-block" asp-action="ViewContent" asp-route-protectedId="@item.ProtectedId">
+							<i
+								class="bi bi-eye"></i></a>
+						<a class="d-block" asp-action="Edit" asp-route-protectedId="@item.ProtectedId">
+							<i
 								class="bi bi-pencil"></i></a>
-								<a class="d-block" asp-action="Delete" asp-route-protectedId="@item.ProtectedId"><i
-									class="bi bi-trash"></i></a>
-								</td>
-								<td>@item.Id</td>
-								<td>@item.Title</td>
-								<td>@item.Tags</td>
-								<td>@item.Source</td>
-								<td>@item.ViewCount</td>
-								<td>@item.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
-								<td>@item.UpdatedAt?.ToString("yyyy-MM-dd HH:mm")</td>
-								<td>@item.CreatedBy</td>
-								<td>@item.UpdatedBy</td>
-							</tr>
-						}
-					</tbody>
+						<a class="d-block" asp-action="Delete" asp-route-protectedId="@item.ProtectedId">
+							<i
+								class="bi bi-trash"></i></a>
+					</td>
+					<td>@item.Id</td>
+					<td>@item.Title</td>
+					<td>@item.Tags</td>
+					<td>@item.Source</td>
+					<td>@item.ViewCount</td>
+					<td>@item.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+					<td>@item.UpdatedAt?.ToString("yyyy-MM-dd HH:mm")</td>
+					<td>@item.CreatedBy</td>
+					<td>@item.UpdatedBy</td>
+				</tr>
+			}
+			</tbody>
 
-				</table>
+		</table>
 
-			</div>
+	</div>
+}
+else
+{
+	<section class="jumbotron">
+		<h1>Kayıt Bulunamadı</h1>
+		<p>Veri tabanı şu anda boş. Lütfen görüntülenmek için bir kayıt ekleyiniz.</p>
+		<a asp-action="Edit" class="btn btn-primary btn-lg">Yeni Kayıt</a>
+	</section>
+}
