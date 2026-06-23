@@ -11,8 +11,9 @@ public interface IEncryptionService
 
 public class AesGcmEncryptionService : IEncryptionService
 {
-	private readonly byte[] _key;
+	private byte[]? _key;
 
+	/*
 	// AES Key 32 byte (256-bit) olmalı
 	public AesGcmEncryptionService(IConfiguration configuration)
 	{
@@ -46,7 +47,29 @@ public class AesGcmEncryptionService : IEncryptionService
 			Encoding.UTF8.GetBytes(password)
 		);
 	}
+	*/
 
+	public void Init(string password)
+    {
+		if (string.IsNullOrWhiteSpace(password)) throw new ArgumentException("Şifre boş olamaz.");
+
+		var passwordBytes = Encoding.UTF8.GetBytes(password);
+
+		// PBKDF2 ile key üretimi (salt ile)
+		/*
+		_key = Rfc2898DeriveBytes.Pbkdf2(
+			password: Encoding.UTF8.GetBytes(password),
+			// salt: ReadOnlySpan<byte>.Empty, // boş salt
+			salt: SHA256.HashData(passwordBytes)[..16], // şifreden salt			
+			iterations: 600_000,
+			hashAlgorithm: HashAlgorithmName.SHA256,
+			outputLength: 32
+		);
+		*/
+
+		// PBKDF2 olmadan key üretimi (salt yok)
+		_key = SHA256.HashData(Encoding.UTF8.GetBytes(password));
+	}
 
 	public string Encrypt(string? plainText)
 	{

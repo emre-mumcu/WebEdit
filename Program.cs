@@ -13,11 +13,7 @@ builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlite("Data S
 
 // builder.Services.AddSingleton<IEncryptionService, AesGcmEncryptionService>();
 
-Console.WriteLine("Enter Password");
-
-var pass = Console.ReadLine();
-
-builder.Services.AddSingleton<IEncryptionService>(sp => new AesGcmEncryptionService("BenimGizliParolam"));
+builder.Services.AddSingleton<IEncryptionService>(sp => new AesGcmEncryptionService());
 
 
 builder.Services.AddDataProtection();
