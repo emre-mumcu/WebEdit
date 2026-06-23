@@ -21,6 +21,7 @@
 
 	<ItemGroup>
 	  <Folder Include="AppLib\" />
+	  <Folder Include="Models\" />
 	</ItemGroup>
 
 </Project>
