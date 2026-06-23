@@ -15,7 +15,7 @@ namespace WebEdit.AppData.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "10.0.8");
+            modelBuilder.HasAnnotation("ProductVersion", "10.0.9");
 
             modelBuilder.Entity("WebEdit.AppData.Entities.WebDocEntity", b =>
                 {
@@ -31,6 +31,9 @@ namespace WebEdit.AppData.Migrations
 
                     b.Property<string>("CreatedBy")
                         .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsEncrypted")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Slug")
                         .HasColumnType("TEXT");

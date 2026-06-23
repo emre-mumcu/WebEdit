@@ -22,6 +22,7 @@ namespace WebEdit.AppData.Migrations
                     Tags = table.Column<string>(type: "TEXT", nullable: true),
                     ViewCount = table.Column<int>(type: "INTEGER", nullable: false),
                     Source = table.Column<string>(type: "TEXT", nullable: true),
+                    IsEncrypted = table.Column<bool>(type: "INTEGER", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: true),
                     CreatedBy = table.Column<string>(type: "TEXT", nullable: true),

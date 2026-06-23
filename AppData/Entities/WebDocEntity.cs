@@ -8,4 +8,5 @@ public class WebDocEntity: BaseEntity
 	public string? Tags { get; set; }
 	public int ViewCount { get; set; }
 	public string? Source { get; set; }
+	public bool IsEncrypted { get; set; } = false;
 }
