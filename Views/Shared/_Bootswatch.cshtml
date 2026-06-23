@@ -25,7 +25,7 @@
 		@foreach (var s in GetBootswatchStyles())
 		{
 			<li><a id="bw-theme-@s" class="dropdown-item" href="javascript:void(0);"
-			       onclick="ChangeBootswatchTheme(this.textContent)">@s</a></li>
+					   onclick="window.bootswatchManager.UpdateUI(this.textContent)">@s</a></li>
 		}
 	</ul>
 </div>

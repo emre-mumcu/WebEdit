@@ -1,1 +1,36 @@
-﻿
+﻿@using System.Text.Json
+@using Microsoft.AspNetCore.Authentication
+
+@{
+	var userInfo = new
+	{
+		IsAuthenticated = User.Identity?.IsAuthenticated,
+		Name = User.Identity?.Name,
+		Claims = User.Claims.Select(c => new
+		{
+			c.Type,
+			c.Value
+		})
+	};
+
+	var json = JsonSerializer.Serialize(
+		userInfo,
+		new JsonSerializerOptions
+		{
+			WriteIndented = true
+		});
+}
+
+<pre>@json</pre>
+
+@{
+	var provider = Context.RequestServices
+	.GetRequiredService<IAuthenticationSchemeProvider>();
+
+	var schemes = await provider.GetAllSchemesAsync();
+
+	foreach (var scheme in schemes)
+	{
+		<p>@scheme</p>
+	}
+}

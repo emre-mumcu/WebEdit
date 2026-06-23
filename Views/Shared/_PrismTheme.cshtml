@@ -29,7 +29,8 @@
 		</li>
 		@foreach (var s in GetPrismStyles())
 		{
-			<li><a id="prism-theme-@s" class="dropdown-item" href="javascript:void(0);" onclick="ChangePrismTheme(this.textContent)">@s</a></li>
+			<li><a id="prism-theme-@s" class="dropdown-item" href="javascript:void(0);"
+					   onclick="window.prismJSManagerManager.UpdateUI(this.textContent)">@s</a></li>
 		}
 	</ul>
 </div>

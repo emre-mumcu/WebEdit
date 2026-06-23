@@ -1,0 +1,239 @@
+@model SettingsIndexViewModel
+@{
+    ViewData["Title"] = "Kullanıcı Ayarları";
+}
+
+<div class="container py-4">
+
+    @* ── Başlık ─────────────────────────────────────────────────────────── *@
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h2 class="mb-0 fw-semibold">
+                <i class="bi bi-sliders me-2 text-primary"></i>Kullanıcı Ayarları
+            </h2>
+            <small class="text-muted">
+                Değişiklikler hem veritabanına hem de tarayıcınızın yerel deposuna kaydedilir.
+            </small>
+        </div>
+    </div>
+
+    @* ── Bildirimler ─────────────────────────────────────────────────────── *@
+    @if (TempData["Success"] is string msg)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>@msg
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @* ════════════════════════════════════════════════════════════════════════
+       BÖLÜM 1 — Bilinen Ayarlar (Dropdown'larla)
+       ════════════════════════════════════════════════════════════════════════ *@
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white border-bottom">
+            <h5 class="mb-0">Tanımlı Ayarlar</h5>
+        </div>
+        <div class="card-body p-0">
+            <form method="post" asp-action="Save" id="knownSettingsForm">
+                @Html.AntiForgeryToken()
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width:30%">Ayar</th>
+                                <th style="width:20%">Anahtar (Key)</th>
+                                <th>Değer</th>
+                                <th style="width:15%">Varsayılan</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var setting in Model.KnownSettings)
+                            {
+                                var currentVal = Model.GetValue(setting.Key);
+                                if (string.IsNullOrEmpty(currentVal))
+                                    currentVal = setting.DefaultValue;
+
+                                <tr>
+                                    <td>
+                                        <span class="fw-medium">@setting.Label</span>
+                                    </td>
+                                    <td>
+                                        <code class="text-secondary">@setting.Key</code>
+                                    </td>
+                                    <td>
+                                        <select name="values[@setting.Key]"
+                                                class="form-select form-select-sm"
+                                                style="max-width:260px">
+                                            @foreach (var opt in setting.AllowedValues)
+                                            {
+                                                <option value="@opt"
+                                                        selected="@(opt == currentVal ? "selected" : null)">
+                                                    @opt
+                                                </option>
+                                            }
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-light text-dark border">
+                                            @setting.DefaultValue
+                                        </span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-footer bg-white d-flex gap-2">
+                    <button type="submit" class="btn btn-primary btn-sm">
+                        <i class="bi bi-floppy me-1"></i>Kaydet
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm"
+                            onclick="resetToDefaults()">
+                        <i class="bi bi-arrow-counterclockwise me-1"></i>Varsayılanlara Dön
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @* ════════════════════════════════════════════════════════════════════════
+       BÖLÜM 2 — Özel Ayar Ekle
+       ════════════════════════════════════════════════════════════════════════ *@
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white border-bottom">
+            <h5 class="mb-0">Özel Ayar Ekle</h5>
+        </div>
+        <div class="card-body">
+            <form method="post" asp-action="Save" id="customSettingForm">
+                @Html.AntiForgeryToken()
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-4">
+                        <label class="form-label fw-medium">Anahtar (Key)</label>
+                        <input type="text" id="customKey" class="form-control"
+                               placeholder="örn. sidebar-collapsed"
+                               pattern="[a-zA-Z0-9\-_]+"
+                               title="Harf, rakam, tire ve alt çizgi kullanılabilir" />
+                    </div>
+                    <div class="col-md-5">
+                        <label class="form-label fw-medium">Değer</label>
+                        <input type="text" id="customValue" class="form-control"
+                               placeholder="örn. true" />
+                    </div>
+                    <div class="col-md-3">
+                        <button type="button" class="btn btn-success w-100"
+                                onclick="submitCustomSetting()">
+                            <i class="bi bi-plus-circle me-1"></i>Ekle / Güncelle
+                        </button>
+                    </div>
+                </div>
+                <div id="customKeyError" class="text-danger small mt-1 d-none">
+                    Geçerli bir key girin.
+                </div>
+                <!-- hidden inputs; JS tarafından doldurulur -->
+                <div id="customHiddenFields"></div>
+            </form>
+        </div>
+    </div>
+
+    @* ════════════════════════════════════════════════════════════════════════
+       BÖLÜM 3 — Mevcut Tüm Kayıtlar (DB'den)
+       ════════════════════════════════════════════════════════════════════════ *@
+    @if (Model.SavedValues.Any())
+    {
+        <div class="card shadow-sm">
+            <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Kayıtlı Tüm Ayarlar</h5>
+                <span class="badge bg-secondary">@Model.SavedValues.Count kayıt</span>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Key</th>
+                                <th>Value</th>
+                                <th>Son Güncelleme</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var kv in Model.SavedValues)
+                            {
+                                <tr>
+                                    <td><code>@kv.Key</code></td>
+                                    <td>@kv.Value</td>
+                                    <td class="text-muted small">—</td>
+                                    <td class="text-end">
+                                        <form method="post" asp-action="Delete"
+                                              class="d-inline"
+                                              onsubmit="return confirm('@kv.Key silinsin mi?')">
+                                            @Html.AntiForgeryToken()
+                                            @* Id'yi almak için controller'da view modele taşıyabilirsin *@
+                                            <button type="button" class="btn btn-outline-danger btn-sm"
+                                                    onclick="deleteSetting('@kv.Key')">
+                                                <i class="bi bi-trash3"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+
+</div>
+
+@section Scripts {
+<script>
+    // Özel ayar form gönderimi
+    function submitCustomSetting() {
+        const key   = document.getElementById('customKey').value.trim();
+        const value = document.getElementById('customValue').value.trim();
+        const errEl = document.getElementById('customKeyError');
+
+        if (!key || !/^[a-zA-Z0-9\-_]+$/.test(key)) {
+            errEl.classList.remove('d-none');
+            return;
+        }
+        errEl.classList.add('d-none');
+
+        const container = document.getElementById('customHiddenFields');
+        container.innerHTML = `
+            <input type="hidden" name="values[${key}]" value="${value}" />
+        `;
+        document.getElementById('customSettingForm').submit();
+    }
+
+    // Varsayılanlara dön: her select'i default value'ya çek
+    function resetToDefaults() {
+        const defaults = @Html.Raw(
+            System.Text.Json.JsonSerializer.Serialize(
+                Model.KnownSettings.ToDictionary(s => s.Key, s => s.DefaultValue)
+            )
+        );
+        document.querySelectorAll('#knownSettingsForm select').forEach(sel => {
+            const key = sel.name.match(/\[(.+)\]/)?.[1];
+            if (key && defaults[key] !== undefined) sel.value = defaults[key];
+        });
+    }
+
+    // AJAX ile tek ayar silme (key üzerinden)
+    async function deleteSetting(key) {
+        if (!confirm(`"${key}" ayarı silinsin mi?`)) return;
+        const resp = await fetch('/Settings/DeleteByKey', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'RequestVerificationToken':
+                    document.querySelector('input[name="__RequestVerificationToken"]').value
+            },
+            body: JSON.stringify({ key })
+        });
+        if (resp.ok) location.reload();
+        else alert('Silme işlemi başarısız.');
+    }
+</script>
+}

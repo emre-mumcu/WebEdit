@@ -1,54 +1,80 @@
-// Prism Theme Settings
+/*
+ localStorage 
+ ------------
+ localStorage.setItem("key", "value");
+ localStorage.getItem("key");
+ localStorage.removeItem("key");
+ Object.keys(localStorage);
 
-function ChangePrismTheme(PrismThemeName) {
+**/
 
-	localStorage.setItem('prism-theme', PrismThemeName);
-	
-	var link = `${document.baseURI}lib/prismjs/themes/${PrismThemeName.toLowerCase()}.css`;
+class BootswatchManager {
 
-	document.getElementById("prism-theme-css").href = link;
+	static defaultValue = "default";
+	static localStorageKey = "bw-theme-css";	
 
+	GetTheme() {
+		return (localStorage.getItem(BootswatchManager.localStorageKey) == null) ? (BootswatchManager.defaultValue) : (localStorage.getItem(BootswatchManager.localStorageKey));
+	}
 
-	document.querySelectorAll('.prism-dropdown .dropdown-item').forEach(el => {
-		el.classList.remove('active');
-	});
+	SetTheme(themeName) {
+		localStorage.setItem(BootswatchManager.localStorageKey, themeName);
+	}
 
-	var activeItem = document.getElementById('prism-theme-' + PrismThemeName);
-	if (activeItem) activeItem.classList.add('active');
-	
-	// location.reload();
+	UpdateUI(themeName, setTheme = true) {
+
+		if(setTheme) this.SetTheme(themeName);		
+
+		document.getElementById(BootswatchManager.localStorageKey).href = `${document.baseURI}lib/bootswatch/${themeName.toLowerCase()}/bootstrap.min.css`;
+
+		document.querySelectorAll('.bw-dropdown .dropdown-item').forEach(el => {
+			el.classList.remove('active');
+		});
+
+		var activeItem = document.getElementById('bw-theme-' + themeName);
+
+		if (activeItem) activeItem.classList.add('active');
+
+		// location.reload();
+	}
 }
 
-document.addEventListener("DOMContentLoaded", function (event) {
-	var prism_theme = (localStorage.getItem('prism-theme') == null) ? ("prism") : (localStorage.getItem('prism-theme'));
+class PrismJSManager {
 
-	ChangePrismTheme(prism_theme);
-});
+	static defaultValue = "prism";
+	static localStorageKey = "prism-theme-css";	
 
-//Bootswatch Theme Settings
+	GetTheme() {
+		return (localStorage.getItem(PrismJSManager.localStorageKey) == null) ? (PrismJSManager.defaultValue) : (localStorage.getItem(PrismJSManager.localStorageKey));
+	}
 
-function ChangeBootswatchTheme(BsThemeName) {
+	SetTheme(themeName) {
+		localStorage.setItem(PrismJSManager.localStorageKey, themeName);
+	}
 
-	localStorage.setItem('bw-theme', BsThemeName);
+	UpdateUI(themeName, setTheme = true) {
 
-	var link = `${document.baseURI}lib/bootswatch/${BsThemeName.toLowerCase()}/bootstrap.min.css`;
+		if(setTheme) this.SetTheme(themeName);		
 
-	document.getElementById("bw-theme-css").href = link;
+		document.getElementById(PrismJSManager.localStorageKey).href = `${document.baseURI}lib/prismjs/themes/${themeName.toLowerCase()}.css`;
 
+		document.querySelectorAll('.prism-dropdown .dropdown-item').forEach(el => {
+			el.classList.remove('active');
+		});
 
-	document.querySelectorAll('.bw-dropdown .dropdown-item').forEach(el => {
-		el.classList.remove('active');
-	});
+		var activeItem = document.getElementById('prism-theme-' + themeName);
+	
+		if (activeItem) activeItem.classList.add('active');		
 
-	var activeItem = document.getElementById('bw-theme-' + BsThemeName);
-	if (activeItem) activeItem.classList.add('active');
+		// location.reload();
+	}
 
-	// location.reload();
 }
 
+window.bootswatchManager = new BootswatchManager();
+window.prismJSManagerManager = new PrismJSManager();
+
 document.addEventListener("DOMContentLoaded", function (event) {
-	var bw_theme = (localStorage.getItem('bw-theme') == null) ? ("default") : (localStorage.getItem('bw-theme'));
-
-	ChangeBootswatchTheme(bw_theme);
+	window.bootswatchManager.UpdateUI(window.bootswatchManager.GetTheme(), false);
+	window.prismJSManagerManager.UpdateUI(window.prismJSManagerManager.GetTheme(), false);
 });
-

@@ -3,12 +3,15 @@ using WebEdit.AppData.Entities;
 
 namespace WebEdit.AppData;
 
+// dotnet ef migrations add InitialCreate -o AppData/Migrations
+// dotnet ef database update
+
 public class AppDbContext : DbContext
 {
 	public static IConfiguration? _Configuration { get; set; }
 	
 	public DbSet<WebDocEntity> WebDocs => Set<WebDocEntity>();
-
+	public DbSet<UserSetting> UserSettings { get; set; }
 
 	public AppDbContext() { }
 

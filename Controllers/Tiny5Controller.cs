@@ -9,7 +9,7 @@ using WebEdit.ViewModels;
 
 namespace WebEdit.Controllers
 {
-    public class Tiny5Controller(AppDbContext db, IDataProtectionProvider provider, IEncryptionService encryption) : Controller // ILogger<Tiny5Controller> logger, 
+	public class Tiny5Controller(AppDbContext db, IDataProtectionProvider provider, IEncryptionService encryption) : Controller // ILogger<Tiny5Controller> logger, 
 	{
 		private readonly IDataProtector _protector = provider.CreateProtector(nameof(Tiny5Controller));
 
@@ -30,9 +30,9 @@ namespace WebEdit.Controllers
 		[HttpGet("[controller]/[action]/{protectedId?}")]
 		public async Task<ActionResult> ViewContent(string? protectedId)
 		{
-			if(string.IsNullOrEmpty(protectedId)) return RedirectToAction("Index");
+			if (string.IsNullOrEmpty(protectedId)) return RedirectToAction("Index");
 			else
-            {
+			{
 				string id = _protector.Unprotect(protectedId);
 
 				WebDocEntity? wd = await db.WebDocs.FindAsync(Guid.Parse(id));
@@ -41,8 +41,8 @@ namespace WebEdit.Controllers
 
 				model?.ProtectedId = protectedId;
 
-				return View(model);                
-            }
+				return View(model);
+			}
 		}
 
 		[HttpGet("[controller]/[action]/{protectedId?}")]
@@ -55,9 +55,9 @@ namespace WebEdit.Controllers
 
 				WebDocEntity? wd = await db.WebDocs.FindAsync(Guid.Parse(id));
 
-				if(wd != null)
-                {
-                    db.WebDocs.Remove(wd);
+				if (wd != null)
+				{
+					db.WebDocs.Remove(wd);
 					await db.SaveChangesAsync();
 				}
 
@@ -67,7 +67,8 @@ namespace WebEdit.Controllers
 
 		[HttpGet("[controller]/[action]/{protectedId?}")]
 		public async Task<ActionResult> Edit(string? protectedId)
-		{
+		{			
+
 			if (protectedId is null)
 			{
 				return View(new WebDocViewModel());
@@ -82,11 +83,11 @@ namespace WebEdit.Controllers
 				{
 					if (wd.IsEncrypted) wd.Content = encryption.Decrypt(wd.Content);
 
-					WebDocViewModel? model = wd.Adapt<WebDocViewModel>();
+					WebDocViewModel? _model = wd.Adapt<WebDocViewModel>();
 
-					model?.ProtectedId = protectedId;
+					_model?.ProtectedId = protectedId;
 
-					return View(model);
+					return View(_model);
 				}
 				else
 				{
@@ -99,10 +100,10 @@ namespace WebEdit.Controllers
 		[ValidateAntiForgeryToken]
 		public async Task<ActionResult> Save(WebDocViewModel model)
 		{
+			if (model.IsEncrypted) model.Content = encryption.Encrypt(model.Content);
+
 			if (model.ProtectedId is null)
 			{
-				if (model.IsEncrypted) model.Content = encryption.Encrypt(model.Content);
-
 				WebDocEntity wd = model.Adapt<WebDocEntity>();
 
 				await db.WebDocs.AddAsync(wd);
@@ -112,7 +113,9 @@ namespace WebEdit.Controllers
 			else
 			{
 				string id = _protector.Unprotect(model.ProtectedId);
+
 				var entity = await db.WebDocs.FirstOrDefaultAsync(x => x.Id == model.Id);
+
 				model.Adapt(entity);
 			}
 
@@ -120,7 +123,11 @@ namespace WebEdit.Controllers
 
 			if (model.IsEncrypted) model.Content = encryption.Decrypt(model.Content);
 
-			return View(viewName: "Edit", model: model);
+			// aynı model veri tabanına gitmemek için doğrudan view a verildiği için
+			// modelstate de hata varsa, view da kullanılan elemanlara model verisi yerine modelstate de eşleşen isimle hata var ise o yazıldığı için bu durumda veri hatası olmasın diye ModelState temizleniyor!
+			ModelState.Clear();
+
+			return View(viewName: "Edit", model);
 		}
 	}
 }

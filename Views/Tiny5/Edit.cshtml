@@ -1,18 +1,18 @@
 ﻿@model WebDocViewModel
 
-<h2><span class="fs-6 text-muted">Default Editor</span></h2>
+<h2><span class="fs-6 text-muted">Custom Editor</span></h2>
 
 <form method="post">
 
 	@Html.AntiForgeryToken()
 	@Html.HiddenFor(m => m.Id)
-	@Html.HiddenFor(m => m.ProtectedId)
+	@Html.HiddenFor(m => m.ProtectedId)	
 
 	<div class="row mb-3">
 		<label asp-for="Title" class="col-sm-2 col-form-label"></label>
 		<div class="col-sm-10">
 			<input asp-for="Title" class="form-control" />
-			<span asp-validation-for="Title"></span>
+			<span asp-validation-for="Title" class="text-danger"></span>
 		</div>
 	</div>
 
@@ -24,64 +24,25 @@
 		</div>
 	</div>
 
+	<div class="row mb-3">
+		<label asp-for="IsEncrypted" class="col-sm-2 col-form-label"></label>
+		<div class="col-sm-10 d-flex align-items-center">
+			<div class="form-check form-switch">
+				<input asp-for="IsEncrypted" class="form-check-input" />
+				<span asp-validation-for="IsEncrypted"></span>
+			</div>
+		</div>
+	</div>
+
 	<textarea id="Content" name="Content">@Model.Content</textarea>
 
 	<button type="submit" class="btn btn-primary mt-3" asp-controller="Tiny5" asp-action="Save">
 		Kaydet
 	</button>
-</form>
 
-<p class="small text-muted my-4">@Model.ProtectedId</p>
+</form>
 
 @section Scripts {
 
-	<script src="@Url.Content("~/lib/tinymce5/tinymce.min.js")"></script>
-
-	<script>
-
-		const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
-
-		tinymce.init({
-
-			selector: '#Content',
-
-			height: '600px',
-
-			content_css: 'document',
-
-			content_style: `
-				body {
-					max-width: none !important;
-					width: 95%;
-					min-height: 297mm;
-					margin: 30px auto;
-					padding: 10mm 10mm;
-					box-sizing: border-box;
-				}
-			`,
-
-			automatic_uploads: true,
-
-			file_picker_types: 'image',
-
-			// images_upload_url: '/Tiny5/UploadImage',
-
-			images_upload_handler: function (blobInfo, success, failure) 
-			{
-				const formData = new FormData();
-				formData.append('file', blobInfo.blob());
-				formData.append('__RequestVerificationToken', token);
-
-				fetch('/Tiny5/UploadImage', 
-				{
-					method: 'POST',
-					body: formData
-				})
-				.then(res => res.json())
-				.then(data => success(data.location))
-				.catch(() => failure('Upload failed'));
-			}
-		});
-
-	</script>
+	<partial name="_TinyCustom" />
 }

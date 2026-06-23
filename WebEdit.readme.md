@@ -1,3 +1,6 @@
+dotnet list package --include-transitive
+dotnet list package --vulnerable
+
 # MVCController'daki UploadImage
 
 ```cs
@@ -22,7 +25,72 @@ public async Task<IActionResult> UploadImage([FromServices] IWebHostEnvironment 
 
 	return Json(new { location = "/uploads/" + fileName });
 }
+
 ```
+
+```
+Get-Volume -DriveLetter A
+fsutil fsinfo drivetype A:
+Get-Item "A:\AppStore\Dev.Apps\WebEdit\bin\Debug\net10.0\WebEdit.exe" -Stream *
+Get-WinEvent -LogName "Microsoft-Windows-CodeIntegrity/Operational" -MaxEvents 20 |
+Where-Object {$_.Id -in 3118,3077,3033} |
+Select-Object TimeCreated, Id, Message |
+Format-List
+Get-WinEvent -LogName "Microsoft-Windows-CodeIntegrity/Operational" -MaxEvents 5
+# admin
+Get-MpPreference | Select-Object EnableControlledFolderAccess
+
+reg query "HKLM\SYSTEM\CurrentControlSet\Control\CI\Policy" /v VerifiedAndReputablePolicyState
+```
+
+
+# Code Signing
+
+```powershell
+# Self-signed certificate oluştur
+New-SelfSignedCertificate `
+ -Type CodeSigningCert `
+ -Subject "CN=WebEdit Dev Cert" `
+ -CertStoreLocation "Cert:\CurrentUser\My"
+
+# PFX export et
+$cert = Get-ChildItem Cert:\CurrentUser\My | Where-Object { $_.Subject -like "*WebEdit*" }
+
+Export-PfxCertificate `
+ -Cert $cert `
+ -FilePath "A:\AppStore\Dev.Apps\WebEdit\webedit.pfx" `
+ -Password (ConvertTo-SecureString "1234" -AsPlainText -Force)
+
+# EXE imzala
+signtool sign /f C:\Dev\webedit.pfx /p 1234 /fd SHA256 WebEdit.exe
+
+# Self-signed cert’i “Trusted Root” yapma
+# Run certmgr.msc
+# 	“Trusted Root Certification Authorities”
+# 	Import certificate
+
+```
+
+## Build Otomasyonu
+
+WebEdit.csproj dosyana şunu ekle:
+
+```xml
+<PropertyGroup Condition="'$(Configuration)'=='Debug'">
+  <SignEnabled>true</SignEnabled>
+</PropertyGroup>
+
+<Target Name="SignExe" AfterTargets="Build">
+  <Exec Command="&quot;C:\Program Files (x86)\Windows Kits\10\bin\x64\signtool.exe&quot; sign /f A:\AppStore\Dev.Apps\WebEdit\webedit.pfx /p 1234 /fd SHA256 /tr http://timestamp.digicert.com /td SHA256 $(TargetPath)" />
+</Target>
+```
+
+Artık <dotnet watch run> çalışınca:
+
+1. Build olur
+2. EXE oluşur
+3. Otomatik imzalanır
+4. Windows daha az “unknown publisher” uyarısı verir
 
 # Create Project
 

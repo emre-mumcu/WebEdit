@@ -1,0 +1,17 @@
+﻿<script src="@Url.Content("~/lib/tinymce5/tinymce.min.js")"></script>
+
+<script src="@Url.Content("~/js/tiny5-common.js")"></script>
+
+<script>
+
+	tinymce.init({
+	...tinyBaseConfig,
+	...tinyMenuConfig,
+	...tinyPluginConfig,
+	...tinyToolbarConfig,
+	...tinyCodeSampleLanguagesCommon,
+	setup: tinyMCECustomImageUpload,
+	...tinyFilePicker,
+	});
+
+</script>

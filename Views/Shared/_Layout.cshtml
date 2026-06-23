@@ -1,61 +1,70 @@
-﻿<!doctype html>
-<html lang="tr" >
+﻿@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+@* js de kullanımı: const token = document.querySelector('meta[name="csrf-token"]').content; *@
+
+<!doctype html>
+<html lang="tr">
 
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>TinyMCE</title>
 	<base href="@Url.Content("~/")">
-	<partial name="_Styles"/>
+	<meta name="csrf-token" content="@Antiforgery.GetAndStoreTokens(Context).RequestToken" />
+	<partial name="_Styles" />
 	@await RenderSectionAsync("Styles", required: false)
 </head>
 
 <body>
 
 	<div class="container-lg py-3">
-	<header>
-		<div class="d-flex flex-column flex-md-row align-items-center pb-3 mb-4 border-bottom">
-			<a href="/" class="link-body-emphasis text-decoration-none">
-				<span class="fs-2">Web Documents</span>
-				<partial name="_Theme"/>				
-				<partial name="_Bootswatch"/>				
-				<partial name="_PrismTheme" />
-			</a>
-			<nav class="d-inline-flex mt-2 mt-md-0 ms-md-auto">
-				<a class="me-3 py-2 link-body-emphasis text-decoration-none" asp-controller="Tiny5"
-				   asp-action="Index">Default Editor</a>
-				<a class="me-3 py-2 link-body-emphasis text-decoration-none" asp-controller="Tiny5Custom"
-				   asp-action="Index">Custom Editor</a>
-				<select id="imageMode">
-					<option value="" selected disabled>Seçiniz</option>
-					<option value="server">[Server Upload]</option>
-					<option value="base64">Base64</option>
-				</select>
-			</nav>
-		</div>
-	</header>
-
-	@RenderBody()
-
-</div>
-
-<partial name="_Scripts"/>
-@await RenderSectionAsync("Scripts", required: false)
-
-<script>
-	const select = document.getElementById('imageMode');
-
-	const saved = localStorage.getItem('imageUploadMode');
+		<header>
+			<div class="d-flex flex-column flex-md-row align-items-center pb-3 mb-4 border-bottom">
+				<a href="/" class="link-body-emphasis text-decoration-none">
+					<span class="fs-2">Web Documents</span>
+					<partial name="_Theme" />
+					<partial name="_Bootswatch" />
+					<partial name="_PrismTheme" />
+					<partial name="_ImageLocation" />
+				</a>
+				<nav class="d-inline-flex mt-2 mt-md-0 ms-md-auto">
+					<a class="me-3 py-2 link-body-emphasis text-decoration-none" asp-controller="Home" asp-action="Index">Home</a>
+					@if (User.Identity?.IsAuthenticated == true)
+					{
+						<a class="me-3 py-2 link-body-emphasis text-decoration-none" href="/dev-logout">Logout</a>
+						
+					}
+					else
+					{
+						<a class="me-3 py-2 link-body-emphasis text-decoration-none" href="/dev-login">Login</a>
+					}
+					<a class="me-3 py-2 link-body-emphasis text-decoration-none" asp-controller="Tiny5" asp-action="Index">Documents</a>
 
 
-	if (saved) {
-		select.value = saved;
+
+				</nav>
+			</div>
+		</header>
+
+		@RenderBody()
+
+	</div>
+
+	<partial name="_Scripts" />
+	@await RenderSectionAsync("Scripts", required: false)
+
+
+
+	@if (User.Identity?.IsAuthenticated == true)
+	{
+		<text>
+			<script>
+
+						document.addEventListener('DOMContentLoaded', function () {
+							//SettingsSync.init();
+						});
+			</script>
+		</text>
 	}
-	document.getElementById('imageMode').addEventListener('change', e => {
-		localStorage.setItem('imageUploadMode', e.target.value);
-		select.value = e.target.value;
-	});
-</script>
 
 </body>
 
