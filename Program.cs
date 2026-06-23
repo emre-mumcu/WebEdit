@@ -55,6 +55,7 @@ try
 catch (Exception ex)
 {
 	var logger = services.GetRequiredService<ILogger<Program>>();
+	logger.Log(logLevel: LogLevel.Error, exception: ex, message: "Application Error!");
 }
 
 app.Run();

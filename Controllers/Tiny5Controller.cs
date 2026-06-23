@@ -9,8 +9,8 @@ using WebEdit.ViewModels;
 
 namespace WebEdit.Controllers
 {
-    public class Tiny5Controller(AppDbContext db, IDataProtectionProvider provider, ILogger<Tiny5Controller> logger, IEncryptionService encryption) : Controller
-    {
+    public class Tiny5Controller(AppDbContext db, IDataProtectionProvider provider, IEncryptionService encryption) : Controller // ILogger<Tiny5Controller> logger, 
+	{
 		private readonly IDataProtector _protector = provider.CreateProtector(nameof(Tiny5Controller));
 
 		public async Task<ActionResult> Index()
