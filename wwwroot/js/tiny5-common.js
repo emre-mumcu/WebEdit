@@ -1,14 +1,25 @@
 const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
 
-const darkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+function isDarkMode() {
+    const theme = localStorage.getItem('theme');
+
+    switch (theme) {
+        case 'dark':
+            return true;
+        case 'light':
+            return false;
+        default:
+            return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    }
+}
 
 const tinyBaseConfig = {
 	// ID'si Content olan HTML elementini TinyMCE editörüne dönüştürür
 	selector: '#Content',
 
-	skin: darkMode ? 'oxide-dark' : 'oxide',
+	skin: isDarkMode() ? 'oxide-dark' : 'oxide',
 
-	content_css: darkMode ? 'dark' : 'default',
+	content_css: isDarkMode() ? 'dark' : 'default',
 
 	height: '600px',
 

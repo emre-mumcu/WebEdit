@@ -4,11 +4,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebEdit.AppData;
 using WebEdit.AppData.Entities;
+using WebEdit.AppLib;
 using WebEdit.ViewModels;
 
 namespace WebEdit.Controllers
 {
-    public class Tiny5Controller(AppDbContext db, IDataProtectionProvider provider, ILogger<Tiny5Controller> logger) : Controller
+    public class Tiny5Controller(AppDbContext db, IDataProtectionProvider provider, ILogger<Tiny5Controller> logger, IEncryptionService encryption) : Controller
     {
 		private readonly IDataProtector _protector = provider.CreateProtector(nameof(Tiny5Controller));
 
@@ -69,9 +70,7 @@ namespace WebEdit.Controllers
 		{
 			if (protectedId is null)
 			{
-				WebDocViewModel model = new WebDocViewModel();
-
-				return View(model);
+				return View(new WebDocViewModel());
 			}
 			else
 			{
@@ -79,19 +78,32 @@ namespace WebEdit.Controllers
 
 				WebDocEntity? wd = await db.WebDocs.FindAsync(Guid.Parse(id));
 
-				WebDocViewModel? model = wd.Adapt<WebDocViewModel>();
+				if (wd != null)
+				{
+					if (wd.IsEncrypted) wd.Content = encryption.Decrypt(wd.Content);
 
-				model?.ProtectedId = protectedId;
+					WebDocViewModel? model = wd.Adapt<WebDocViewModel>();
 
-				return View(model);
+					model?.ProtectedId = protectedId;
+
+					return View(model);
+				}
+				else
+				{
+					return View(new WebDocViewModel());
+				}
 			}
 		}
 
+		[HttpPost]
+		[ValidateAntiForgeryToken]
 		public async Task<ActionResult> Save(WebDocViewModel model)
 		{
 			if (model.ProtectedId is null)
 			{
-				WebDocEntity wd = model.Adapt<WebDocEntity>();				
+				if (model.IsEncrypted) model.Content = encryption.Encrypt(model.Content);
+
+				WebDocEntity wd = model.Adapt<WebDocEntity>();
 
 				await db.WebDocs.AddAsync(wd);
 
@@ -106,29 +118,9 @@ namespace WebEdit.Controllers
 
 			await db.SaveChangesAsync();
 
+			if (model.IsEncrypted) model.Content = encryption.Decrypt(model.Content);
+
 			return View(viewName: "Edit", model: model);
-		}
-
-		[HttpPost]
-		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> UploadImage([FromServices] IWebHostEnvironment env, IFormFile file)
-		{
-			if (file == null || file.Length == 0) return BadRequest();
-
-			var uploadsFolder = Path.Combine(env.WebRootPath, "uploads");
-
-			if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
-
-			var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
-
-			var filePath = Path.Combine(uploadsFolder, fileName);
-
-			using (var stream = new FileStream(filePath, FileMode.Create))
-			{
-				await file.CopyToAsync(stream);
-			}
-
-			return Json(new { location = "/uploads/" + fileName });
 		}
 	}
 }

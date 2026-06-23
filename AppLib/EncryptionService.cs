@@ -5,8 +5,8 @@ namespace WebEdit.AppLib;
 
 public interface IEncryptionService
 {
-	string Encrypt(string plainText);
-	string Decrypt(string cipherText);
+	string Encrypt(string? plainText);
+	string Decrypt(string? cipherText);
 }
 
 public class AesGcmEncryptionService : IEncryptionService
@@ -48,9 +48,9 @@ public class AesGcmEncryptionService : IEncryptionService
 	}
 
 
-	public string Encrypt(string plainText)
+	public string Encrypt(string? plainText)
 	{
-		if (string.IsNullOrEmpty(plainText)) return plainText;
+		if (string.IsNullOrEmpty(plainText)) return string.Empty;
 
 		// UTF-8 ile encode → tüm dilleri destekler
 		var plainBytes = Encoding.UTF8.GetBytes(plainText);
@@ -76,9 +76,9 @@ public class AesGcmEncryptionService : IEncryptionService
 		return Convert.ToBase64String(result);
 	}
 
-	public string Decrypt(string cipherText)
+	public string Decrypt(string? cipherText)
 	{
-		if (string.IsNullOrEmpty(cipherText)) return cipherText;
+		if (string.IsNullOrEmpty(cipherText)) return string.Empty;
 
 		var fullBytes = Convert.FromBase64String(cipherText);
 

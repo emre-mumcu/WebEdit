@@ -1,3 +1,29 @@
+# MVCController'daki UploadImage
+
+```cs
+[HttpPost]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> UploadImage([FromServices] IWebHostEnvironment env, IFormFile file)
+{
+	if (file == null || file.Length == 0) return BadRequest();
+
+	var uploadsFolder = Path.Combine(env.WebRootPath, "uploads");
+
+	if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
+
+	var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
+
+	var filePath = Path.Combine(uploadsFolder, fileName);
+
+	using (var stream = new FileStream(filePath, FileMode.Create))
+	{
+		await file.CopyToAsync(stream);
+	}
+
+	return Json(new { location = "/uploads/" + fileName });
+}
+```
+
 # Create Project
 
 .editorconfig eklemek için EXPLORER paneline sağ tık ve Generate .editorconfig seçin.

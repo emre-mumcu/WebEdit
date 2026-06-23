@@ -70,9 +70,7 @@ namespace WebEdit.Controllers
 		{
 			if (protectedId is null)
 			{
-				WebDocViewModel model = new WebDocViewModel();
-				
-				return View(model);
+				return View(new WebDocViewModel());
 			}
 			else
 			{
@@ -80,19 +78,33 @@ namespace WebEdit.Controllers
 
 				WebDocEntity? wd = await db.WebDocs.FindAsync(Guid.Parse(id));
 
-				WebDocViewModel? model = wd.Adapt<WebDocViewModel>();
+				if(wd != null)
+                {
+					if (wd.IsEncrypted) wd.Content = encryption.Decrypt(wd.Content);
 
-				model?.ProtectedId = protectedId;
+					WebDocViewModel? model = wd.Adapt<WebDocViewModel>();
 
-				return View(model);
+					model?.ProtectedId = protectedId;
+
+					return View(model);                    
+                }
+				else
+                {
+					return View(new WebDocViewModel());
+				}
 			}
 		}
 
+		[HttpPost]
+		[ValidateAntiForgeryToken]
 		public async Task<ActionResult> Save(WebDocViewModel model)
 		{
+			if (model.IsEncrypted) model.Content = encryption.Encrypt(model.Content);
+
 			if (model.ProtectedId is null)
 			{
-				WebDocEntity wd = model.Adapt<WebDocEntity>();
+				WebDocEntity wd = model.Adapt<WebDocEntity>();				
+
 				await db.WebDocs.AddAsync(wd);
 
 				model.ProtectedId = _protector.Protect(wd.Id.ToString());
@@ -100,11 +112,15 @@ namespace WebEdit.Controllers
 			else
 			{
 				string id = _protector.Unprotect(model.ProtectedId);
+
 				var entity = await db.WebDocs.FirstOrDefaultAsync(x => x.Id == model.Id);
-				model.Adapt(entity);
+				
+				model.Adapt(entity);				
 			}
 
 			await db.SaveChangesAsync();
+
+			if (model.IsEncrypted) model.Content = encryption.Decrypt(model.Content);
 
 			return View(viewName: "Edit", model: model);
 		}

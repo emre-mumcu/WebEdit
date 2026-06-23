@@ -20,7 +20,7 @@ function ChangePrismTheme(PrismThemeName) {
 }
 
 document.addEventListener("DOMContentLoaded", function (event) {
-	var prism_theme = (localStorage.getItem('prism-theme') == null) ? ("default") : (localStorage.getItem('prism-theme'));
+	var prism_theme = (localStorage.getItem('prism-theme') == null) ? ("prism") : (localStorage.getItem('prism-theme'));
 
 	ChangePrismTheme(prism_theme);
 });
