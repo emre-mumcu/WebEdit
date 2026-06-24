@@ -1,0 +1,93 @@
+using WebEdit.AppData;
+using WebEdit.AppData.Entities;
+
+namespace WebEdit.AppLib;
+
+public interface IExceptionLogger
+{
+	Task LogAsync(Exception ex, HttpContext context, int? statusCode = null);
+}
+
+public class EfExceptionLogger(AppDbContext _db) : IExceptionLogger
+{
+	public async Task LogAsync(Exception ex, HttpContext context, int? statusCode = null)
+	{
+		try
+		{
+			var log = new ExceptionLogEntity
+			{
+				Path = context.Request.Path,
+				Method = context.Request.Method,
+				StatusCode = statusCode,
+
+				Message = ex.Message,
+				StackTrace = ex.ToString(),
+
+				CreatedBy = context.User?.Identity?.Name,
+				CreatedAt = DateTime.UtcNow,
+				ClientIP = context.Connection.RemoteIpAddress?.ToString()
+			};
+
+			_db.Exceptions.Add(log);
+
+			await _db.SaveChangesAsync();
+		}
+		catch
+		{
+			// logging failure asla sistemi kırmamalı
+		}
+	}
+}
+
+public class ExceptionLoggingMiddleware
+{
+	private readonly RequestDelegate _next;
+
+	public ExceptionLoggingMiddleware(RequestDelegate next)
+	{
+		_next = next;
+	}
+
+	public async Task Invoke(HttpContext context, IExceptionLogger logger)
+	{
+		try
+		{
+			await _next(context);
+		}
+		catch (Exception ex)
+		{
+			await logger.LogAsync(ex, context, 500);
+
+			throw; // pipeline devam etsin (UseExceptionHandler vs isterse)
+		}
+	}
+}
+
+// Kullanımı:app.UseEfExceptionLogging(); builder.Services.AddEfExceptionLogging();
+
+public static class ExceptionLoggingExtensions
+{
+	public static IServiceCollection AddEfExceptionLogging(this IServiceCollection services)
+	{
+		services.AddScoped<IExceptionLogger, EfExceptionLogger>();
+		return services;
+	}
+
+	public static IApplicationBuilder UseEfExceptionLogging(this IApplicationBuilder app)
+	{
+		return app.UseMiddleware<ExceptionLoggingMiddleware>();
+	}
+
+	public static Task LogToDbAsync(this Exception ex,	HttpContext context, int? statusCode = null)
+	{
+		try
+		{
+			var logger = App.Instance.HttpContextAccessor.HttpContext!.RequestServices.GetRequiredService<IExceptionLogger>();
+			return logger.LogAsync(ex, context, statusCode);			
+		}
+		catch (System.Exception)
+		{
+			throw;
+		}
+	}
+}

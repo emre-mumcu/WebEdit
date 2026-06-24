@@ -1,6 +1,49 @@
 dotnet list package --include-transitive
 dotnet list package --vulnerable
 
+```cs
+/*
+
+// builder.Services.AddSingleton<IEncryptionService, AesGcmEncryptionService>();
+
+builder.Services.AddSingleton<IEncryptionService>(sp => new AesGcmEncryptionService());
+builder.Services.AddSingleton<IEncryptionService>(sp =>
+{
+	return new AesGcmEncryptionService("BenimGizliParolam");
+});
+
+builder.Services.AddSingleton<IEncryptionService>(sp =>
+{
+	var config = sp.GetRequiredService<IConfiguration>();
+
+	var password = config["Encryption:Password"]
+		?? throw new InvalidOperationException();
+
+	return new AesGcmEncryptionService(password);
+});
+
+
+Options Pattern
+
+public class EncryptionOptions
+{
+    public string Password { get; set; } = string.Empty;
+}
+
+builder.Services.Configure<EncryptionOptions>(builder.Configuration.GetSection("Encryption"));
+
+public AesGcmEncryptionService(IOptions<EncryptionOptions> options)
+{
+    var password = options.Value.Password;
+    ...
+}
+
+builder.Services.AddSingleton<IEncryptionService, AesGcmEncryptionService>();
+
+*/
+
+```
+
 # MVCController'daki UploadImage
 
 ```cs

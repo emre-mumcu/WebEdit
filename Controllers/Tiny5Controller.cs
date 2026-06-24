@@ -1,4 +1,5 @@
 using Mapster;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,7 @@ using WebEdit.ViewModels;
 
 namespace WebEdit.Controllers
 {
+	[Authorize(Roles = "Editör")]
 	public class Tiny5Controller(AppDbContext db, IDataProtectionProvider provider, IEncryptionService encryption) : Controller // ILogger<Tiny5Controller> logger, 
 	{
 		private readonly IDataProtector _protector = provider.CreateProtector(nameof(Tiny5Controller));

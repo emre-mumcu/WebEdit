@@ -11,7 +11,7 @@ using WebEdit.AppData;
 namespace WebEdit.AppData.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260623151949_InitialCreate")]
+    [Migration("20260624113207_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -19,6 +19,62 @@ namespace WebEdit.AppData.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.9");
+
+            modelBuilder.Entity("WebEdit.AppData.Entities.ExceptionLogEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ClientIP")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ExceptionType")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("InnerException")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsHandled")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Message")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Method")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Path")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("QueryString")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("StackTrace")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("StatusCode")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Exceptions");
+                });
 
             modelBuilder.Entity("WebEdit.AppData.Entities.UserSetting", b =>
                 {
@@ -52,6 +108,9 @@ namespace WebEdit.AppData.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ClientIP")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Content")

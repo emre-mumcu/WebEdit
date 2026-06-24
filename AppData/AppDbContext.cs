@@ -10,8 +10,10 @@ public class AppDbContext : DbContext
 {
 	public static IConfiguration? _Configuration { get; set; }
 	
-	public DbSet<WebDocEntity> WebDocs => Set<WebDocEntity>();
+	// public DbSet<WebDocEntity> WebDocs => Set<WebDocEntity>();
+	public DbSet<WebDocEntity> WebDocs { get; set; }
 	public DbSet<UserSetting> UserSettings { get; set; }
+	public DbSet<ExceptionLogEntity> Exceptions { get; set; }
 
 	public AppDbContext() { }
 
