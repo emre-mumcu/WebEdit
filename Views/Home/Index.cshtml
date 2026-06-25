@@ -21,7 +21,9 @@
 		});
 }
 
-<pre>@json</pre>
+<p class="fs-4 text-primary mt-4 mb-0"><i class="bi bi-person-vcard-fill"></i> User Details</p>
+
+<pre><code class="language-json">@json</code></pre>
 
 @{
 	var provider = Context.RequestServices
@@ -29,8 +31,11 @@
 
 	var schemes = await provider.GetAllSchemesAsync();
 
-	foreach (var scheme in schemes)
+	<p class="fs-4 text-primary mt-4 mb-0"><i class="bi bi-gear-fill"></i> Authentication Schemes</p>
+
+	foreach (AuthenticationScheme scheme in schemes)
 	{
-		<p>@scheme</p>
+		<pre><code class="language-csharp">@scheme</code></pre>
 	}
 }
+

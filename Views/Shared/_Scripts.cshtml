@@ -12,9 +12,32 @@
 
 <script src="@Url.Content("~/js/theme.js")"></script>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.26.25/dist/sweetalert2.all.min.js" integrity="sha256-Tobw4i5HcbW4qsJMYTxmGAameLGvooTQPPatA9PiGgo=" crossorigin="anonymous"></script>
+
 <script>
 	document.addEventListener('DOMContentLoaded', function () {
 		Prism.plugins.autoloader.languages_path = "@Url.Content("~/lib/prismjs/components/")";
 		Prism.highlightAll();
 	});
 </script>
+
+			<script>
+					async function showAlertsSequentially(list) {
+						for (const a of list) {
+							await Swal.fire({
+								title: 'Message',
+								html: a.msg,
+								icon: a.icon,
+								confirmButtonText: 'OK'
+							});
+						}
+					}
+
+					
+
+					window.addEventListener('load', function () {
+						if (window.__alerts && window.__alerts.length > 0) {
+							showAlertsSequentially(window.__alerts);
+						}
+					});
+			</script>

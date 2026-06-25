@@ -1,0 +1,68 @@
+﻿@using Microsoft.AspNetCore.Http
+@using Newtonsoft.Json
+@using WebEdit.AppLib
+
+@{
+	/*
+			<script>
+					async function showAlertsSequentially(list) {
+						for (const a of list) {
+							await Swal.fire({
+								title: 'Message',
+								html: a.msg,
+								icon: a.icon,
+								confirmButtonText: 'OK'
+							});
+						}
+					}
+
+					
+
+					window.addEventListener('load', function () {
+						if (window.__alerts && window.__alerts.length > 0) {
+							showAlertsSequentially(window.__alerts);
+						}
+					});
+			</script>
+	*/
+	{	// message
+		string? w = App.Instance.HttpContextAccessor?.HttpContext?.Session.TakeKey<string>("war");
+		string? e = App.Instance.HttpContextAccessor?.HttpContext?.Session.TakeKey<string>("err");
+		string? s = App.Instance.HttpContextAccessor?.HttpContext?.Session.TakeKey<string>("scc");
+		string? i = App.Instance.HttpContextAccessor?.HttpContext?.Session.TakeKey<string>("inf");
+		string? q = App.Instance.HttpContextAccessor?.HttpContext?.Session.TakeKey<string>("que");
+
+		var alerts = new List<object>();
+
+		if (!string.IsNullOrEmpty(w)) alerts.Add(new { msg = w, icon = "warning" });
+		if (!string.IsNullOrEmpty(e)) alerts.Add(new { msg = e, icon = "error" });
+		if (!string.IsNullOrEmpty(s)) alerts.Add(new { msg = s, icon = "success" });
+		if (!string.IsNullOrEmpty(i)) alerts.Add(new { msg = i, icon = "info" });
+		if (!string.IsNullOrEmpty(q)) alerts.Add(new { msg = q, icon = "question" });
+
+		if (alerts.Any())
+		{
+			<script>
+				window.__alerts = @Html.Raw(JsonConvert.SerializeObject(alerts));
+			</script>
+		}
+	}
+
+	
+	{	// toast
+		string? t = App.Instance.HttpContextAccessor?.HttpContext?.Session.TakeKey<string>("toast");
+		if (!string.IsNullOrEmpty(t)) ShowToast(t, "info");	
+	}
+
+}
+
+@functions {
+
+	public void ShowToast(string message, string icon)
+	{
+		<script>
+			function ShowToast(m, i) { Swal.fire({ title: 'Message', html: m, icon: i, confirmButtonText: 'OK', toast: true, position: 'top-end' }); }
+			ShowToast('@message', '@icon');
+		</script>
+	}
+}

@@ -9,6 +9,7 @@ namespace WebEdit.AppData;
 // dotnet add package Microsoft.EntityFrameworkCore.Sqlite
 // dotnet add package Microsoft.EntityFrameworkCore.Design
 // dotnet add package Microsoft.EntityFrameworkCore.Tools
+
 // dotnet ef migrations add InitialCreate -o AppData/Migrations
 // dotnet ef database update
 
