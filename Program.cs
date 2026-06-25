@@ -9,7 +9,7 @@ builder.Services.AddMvc();
 
 builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlite("Data Source=webedit.db"));
+builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlite("Data Source=WebDocuments.db"));
 
 builder.Services.AddSingleton<IEncryptionService, AesGcmEncryptionService>();
 

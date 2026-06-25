@@ -27,19 +27,24 @@
 					<partial name="_ImageLocation" />
 				</a>
 				<nav class="d-inline-flex mt-2 mt-md-0 ms-md-auto">
-					<a class="me-3 py-2 link-body-emphasis text-decoration-none" asp-controller="Home" asp-action="Index">Home</a>
+					<a class="me-3 py-2 link-body-emphasis text-decoration-none" asp-controller="Home"
+					   asp-action="Index"><i class="bi bi-house-fill"></i> Home</a>
 					@if (User.Identity?.IsAuthenticated == true)
 					{
-						<a class="me-3 py-2 link-body-emphasis text-decoration-none" asp-controller="Tiny5" asp-action="Index">Documents</a>
+						<a class="me-3 py-2 link-body-emphasis text-decoration-none" asp-controller="Tiny5"
+						   asp-action="Index"><i class="bi bi-file-earmark-richtext"></i> Documents</a>
 						
-						<a class="me-3 py-2 link-body-emphasis text-decoration-none" asp-controller="Common" asp-action="DbLogs">Logs</a>
+						<a class="me-3 py-2 link-body-emphasis text-decoration-none" asp-controller="Common"
+						   asp-action="DbLogs"><i class="bi bi-table"></i> Logs</a>
 
-						<a class="me-3 py-2 link-body-emphasis text-decoration-none" href="/logout">Logout</a>
+						<a class="me-3 py-2 link-body-emphasis text-decoration-none" href="/logout"><i
+							class="bi bi-box-arrow-left"></i> Logout</a>
 						
 					}
 					else
 					{
-						<a class="me-3 py-2 link-body-emphasis text-decoration-none" href="/login">Login</a>
+						<a class="me-3 py-2 link-body-emphasis text-decoration-none" href="/login"><i
+							class="bi bi-box-arrow-in-right"></i> Login</a>
 					}
 					
 

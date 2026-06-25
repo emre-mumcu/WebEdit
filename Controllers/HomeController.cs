@@ -6,7 +6,6 @@ namespace WebEdit.Controllers
     {
         public ActionResult Index()
         {
-			throw new Exception("hehe");
             return View();
         }
 

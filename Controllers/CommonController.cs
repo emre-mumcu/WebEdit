@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using WebEdit.AppData;
+using WebEdit.AppLib;
 using WebEdit.Models;
 using WebEdit.ViewModels;
 
@@ -69,12 +70,12 @@ namespace WebEdit.Controllers
 
 		private async Task RefreshModelFilter(ModelFilter modelFilter)
 		{
-			modelFilter.MethodList = await db.Exceptions
+			modelFilter.MethodList = await db.DbLogs
 				.Select(x => x.Method).Distinct().OrderBy(x => x)
 				.Select(y => new SelectListItem { Text = y, Value = y })
 				.ToListAsync();
 
-			modelFilter.StatusCodeList = await db.Exceptions
+			modelFilter.StatusCodeList = await db.DbLogs
 				.Select(x => x.StatusCode).Distinct().OrderBy(x => x)
 				.Select(y => new SelectListItem { Text = y.ToString(), Value = y.ToString() })
 				.ToListAsync();
@@ -83,7 +84,7 @@ namespace WebEdit.Controllers
 		[HttpGet]
 		public async Task<IActionResult> DbLogs(ModelFilter modelFilter)
 		{
-			var query = db.Exceptions.AsNoTracking().AsQueryable();
+			var query = db.DbLogs.AsNoTracking().AsQueryable();
 
 			query = ApplyFilter(query, modelFilter);
 
@@ -120,7 +121,7 @@ namespace WebEdit.Controllers
 
 		public async Task<IActionResult> DbLogDetail(Guid id)
 		{
-			var log = await db.Exceptions.FindAsync(id);
+			var log = await db.DbLogs.FindAsync(id);
 			if (log is null) return NotFound();
 			return View(log);
 		}
@@ -129,7 +130,7 @@ namespace WebEdit.Controllers
 		[ValidateAntiForgeryToken]
 		public async Task<IActionResult> MarkHandled(Guid id)
 		{
-			var log = await db.Exceptions.FindAsync(id);
+			var log = await db.DbLogs.FindAsync(id);
 			if (log is null) return NotFound();
 
 			log.IsHandled = true;
@@ -143,14 +144,25 @@ namespace WebEdit.Controllers
 		[ValidateAntiForgeryToken]
 		public async Task<IActionResult> Delete(Guid id, ModelFilter filter)
 		{
-			var log = await db.Exceptions.FindAsync(id);
+			var log = await db.DbLogs.FindAsync(id);
 			if (log is not null)
 			{
-				db.Exceptions.Remove(log);
+				db.DbLogs.Remove(log);
 				await db.SaveChangesAsync();
 			}
 
 			return RedirectToAction(nameof(DbLogs), filter);
+		}
+
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> Truncate()
+		{
+			// await db.Database.ExecuteSqlRawAsync(@"DELETE FROM Users; DELETE FROM sqlite_sequence WHERE name = 'Users';");
+
+			await db.DbLogs.ExecuteDeleteAsync();
+
+			return RedirectToAction(nameof(DbLogs));
 		}
 
 
@@ -160,6 +172,8 @@ namespace WebEdit.Controllers
 			var exceptionFeature = HttpContext.Features.Get<IExceptionHandlerPathFeature>();
 
 			var exception = exceptionFeature?.Error ?? new Exception("Unknown Exception");
+
+			await exception.LogToDbAsync();
 
 			var model = new ErrorViewModel
 			{

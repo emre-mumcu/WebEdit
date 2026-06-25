@@ -3,6 +3,12 @@ using WebEdit.AppData.Entities;
 
 namespace WebEdit.AppData;
 
+// dotnet ef --version
+// dotnet tool install--global dotnet-ef
+// dotnet tool update--global dotnet-ef 
+// dotnet add package Microsoft.EntityFrameworkCore.Sqlite
+// dotnet add package Microsoft.EntityFrameworkCore.Design
+// dotnet add package Microsoft.EntityFrameworkCore.Tools
 // dotnet ef migrations add InitialCreate -o AppData/Migrations
 // dotnet ef database update
 
@@ -13,7 +19,7 @@ public class AppDbContext : DbContext
 	// public DbSet<WebDocEntity> WebDocs => Set<WebDocEntity>();
 	public DbSet<WebDocEntity> WebDocs { get; set; }
 	public DbSet<UserSetting> UserSettings { get; set; }
-	public DbSet<DbLogEntity> Exceptions { get; set; }
+	public DbSet<DbLogEntity> DbLogs { get; set; }
 
 	public AppDbContext() { }
 

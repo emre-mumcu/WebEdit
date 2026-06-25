@@ -32,7 +32,7 @@ public class EfExceptionLogger(AppDbContext _db) : IExceptionLogger
 				ClientIP = context.GetClientIpAddress(),
 			};
 
-			_db.Exceptions.Add(log);
+			_db.DbLogs.Add(log);
 
 			await _db.SaveChangesAsync();
 		}
@@ -82,12 +82,13 @@ public static class ExceptionLoggingExtensions
 		return app.UseMiddleware<ExceptionLoggingMiddleware>();
 	}
 
-	public static Task LogToDbAsync(this Exception ex,	HttpContext context, int? statusCode = null)
+	public static Task LogToDbAsync(this Exception ex)
 	{
 		try
 		{
 			var logger = App.Instance.HttpContextAccessor.HttpContext!.RequestServices.GetRequiredService<IExceptionLogger>();
-			return logger.LogAsync(ex, context, statusCode);			
+			var context = App.Instance.HttpContextAccessor.HttpContext;
+			return logger.LogAsync(ex, context);			
 		}
 		catch (System.Exception)
 		{
