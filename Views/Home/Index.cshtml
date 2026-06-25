@@ -1,41 +1,28 @@
-﻿@using System.Text.Json
-@using Microsoft.AspNetCore.Authentication
+﻿<div class="row">
+	<div class="col-12">
 
-@{
-	var userInfo = new
-	{
-		IsAuthenticated = User.Identity?.IsAuthenticated,
-		Name = User.Identity?.Name,
-		Claims = User.Claims.Select(c => new
-		{
-			c.Type,
-			c.Value
-		})
-	};
+		<p class="text-uppercase text-white-50 small fw-semibold ls-widened mb-3">
+			Kurumsal Çözümler
+		</p>
 
-	var json = JsonSerializer.Serialize(
-		userInfo,
-		new JsonSerializerOptions
-		{
-			WriteIndented = true
-		});
-}
+		<h1 class="display-4 fw-bold text-white mb-4 lh-sm">
+			Geleceği Birlikte<br class="d-none d-sm-block" />
+			İnşa Ediyoruz
+		</h1>
 
-<p class="fs-4 text-primary mt-4 mb-0"><i class="bi bi-person-vcard-fill"></i> User Details</p>
+		<p class="lead text-white-50 mb-5 fw-normal">
+			Sektördeki deneyimimiz ve yenilikçi yaklaşımımızla
+			işletmenizi bir adım ileri taşıyoruz.
+		</p>
 
-<pre><code class="language-json">@json</code></pre>
+		<div class="d-flex flex-column flex-sm-row gap-3">
+			<a href="#" class="btn btn-light btn-lg px-4 fw-semibold">
+				Keşfedin
+			</a>
+			<a href="#" class="btn btn-outline-light btn-lg px-4">
+				Bize Ulaşın
+			</a>
+		</div>
 
-@{
-	var provider = Context.RequestServices
-	.GetRequiredService<IAuthenticationSchemeProvider>();
-
-	var schemes = await provider.GetAllSchemesAsync();
-
-	<p class="fs-4 text-primary mt-4 mb-0"><i class="bi bi-gear-fill"></i> Authentication Schemes</p>
-
-	foreach (AuthenticationScheme scheme in schemes)
-	{
-		<pre><code class="language-csharp">@scheme</code></pre>
-	}
-}
-
+	</div>
+</div>

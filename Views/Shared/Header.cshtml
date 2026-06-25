@@ -1,0 +1,22 @@
+﻿<header class="py-3 px-4 px-lg-5">
+	<div class="container-xxl d-flex align-items-center justify-content-between">
+		<a href="@Url.Content("~/")" class="text-decoration-none">
+			<span class="h5 fw-bold text-white mb-0 letter-spacing-1">Web Documents</span>
+		</a>
+		<nav class="d-none d-md-flex gap-4">			
+			@if (User.Identity?.IsAuthenticated == true)
+			{
+				<a href="/" class="text-white-50 text-decoration-none small fw-medium">Ana Sayfa</a>
+				<a class="text-white-50 text-decoration-none small fw-medium" asp-controller="Tiny5"
+				   asp-action="Index">Documents</a>
+				<a class="text-white-50 text-decoration-none small fw-medium" asp-controller="Common"
+				   asp-action="DbLogs">Logs</a>
+				<a href="/logout" class="text-white-50 text-decoration-none small fw-medium">Logout</a>
+			}
+			else
+			{
+				<a href="/login" class="text-white-50 text-decoration-none small fw-medium">Login</a>
+			}
+		</nav>
+	</div>
+</header>

@@ -10,7 +10,7 @@ using WebEdit.ViewModels;
 
 namespace WebEdit.Controllers
 {
-	[Authorize(Roles = "Editör")]
+	[Authorize(Roles = "Administrator")]
 	public class Tiny5Controller(AppDbContext db, IDataProtectionProvider provider, IEncryptionService encryption) : Controller // ILogger<Tiny5Controller> logger, 
 	{
 		private readonly IDataProtector _protector = provider.CreateProtector(nameof(Tiny5Controller));

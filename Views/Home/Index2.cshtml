@@ -1,0 +1,130 @@
+﻿@using System.Text.Json
+@using Microsoft.AspNetCore.Authentication
+
+@{
+	var userInfo = new
+	{
+		IsAuthenticated = User.Identity?.IsAuthenticated,
+		Name = User.Identity?.Name,
+		Claims = User.Claims.Select(c => new
+		{
+			c.Type,
+			c.Value
+		})
+	};
+
+	var json = JsonSerializer.Serialize(
+		userInfo,
+		new JsonSerializerOptions
+		{
+			WriteIndented = true
+		});
+}
+
+<p class="fs-4 text-primary mt-4 mb-0"><i class="bi bi-person-vcard-fill"></i> User Details</p>
+
+<pre><code class="language-json">@json</code></pre>
+
+@{
+	var provider = Context.RequestServices
+	.GetRequiredService<IAuthenticationSchemeProvider>();
+
+	var schemes = await provider.GetAllSchemesAsync();
+
+	<p class="fs-4 text-primary mt-4 mb-0"><i class="bi bi-gear-fill"></i> Authentication Schemes</p>
+
+	foreach (AuthenticationScheme scheme in schemes)
+	{
+		<pre><code class="language-csharp">@scheme</code></pre>
+	}
+}
+
+
+
+LAYOUT
+
+
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+@* js de kullanımı: const token = document.querySelector('meta[name="csrf-token"]').content; *@
+
+<!doctype html>
+<html lang="tr">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>TinyMCE</title>
+	<base href="@Url.Content("~/")">
+	<meta name="csrf-token" content="@Antiforgery.GetAndStoreTokens(Context).RequestToken" />
+	<partial name="_Styles" />
+	@await RenderSectionAsync("Styles", required: false)
+</head>
+
+<body>
+
+	<div class="container-lg py-3">
+		<header>
+			<div class="d-flex flex-column flex-md-row align-items-center pb-3 mb-4 border-bottom">
+				<a href="/" class="link-body-emphasis text-decoration-none">
+					<span class="fs-2">Web Documents</span>
+					<partial name="_Theme" />
+					<partial name="_Bootswatch" />
+					<partial name="_PrismTheme" />
+					<partial name="_ImageLocation" />
+				</a>
+				<nav class="d-inline-flex mt-2 mt-md-0 ms-md-auto">
+					<a class="me-3 py-2 link-body-emphasis text-decoration-none" asp-controller="Home"
+					   asp-action="Index"><i class="bi bi-house-fill"></i> Home</a>
+					@if (User.Identity?.IsAuthenticated == true)
+					{
+						<a class="me-3 py-2 link-body-emphasis text-decoration-none" asp-controller="Tiny5"
+						   asp-action="Index"><i class="bi bi-file-earmark-richtext"></i> Documents</a>
+
+						<a class="me-3 py-2 link-body-emphasis text-decoration-none" asp-controller="Common"
+						   asp-action="DbLogs"><i class="bi bi-table"></i> Logs</a>
+
+						<a class="me-3 py-2 link-body-emphasis text-decoration-none" href="/logout"><i
+							class="bi bi-box-arrow-left"></i> Logout</a>
+
+						}
+					else
+						{
+							<a class="me-3 py-2 link-body-emphasis text-decoration-none" href="/login"><i
+								class="bi bi-box-arrow-in-right"></i> Login</a>
+							}
+
+					
+
+
+						</nav>
+					</div>
+				</header>
+
+				@RenderBody()
+
+		
+
+			</div>
+
+			<partial name="_Scripts" />
+			@await RenderSectionAsync("Scripts", required: false)
+
+			<partial name="_ShowMessage" />
+
+			@if (User.Identity?.IsAuthenticated == true)
+			{
+				<text>
+					<script>
+
+								document.addEventListener('DOMContentLoaded', function () {
+									//
+								});
+					</script>
+				</text>
+			}
+
+
+
+		</body>
+
+	</html>

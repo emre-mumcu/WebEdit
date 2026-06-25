@@ -12,7 +12,7 @@ namespace WebEdit.Controllers
 			// HttpContext.Session.SetKey<string>("scc", "success");
 			// HttpContext.Session.SetKey<string>("inf", "info");
 			// HttpContext.Session.SetKey<string>("que", "question"); 
-			HttpContext.Session.SetKey<string>("toast", "question");
+			// HttpContext.Session.SetKey<string>("toast", "question");
 
             return View();
         }

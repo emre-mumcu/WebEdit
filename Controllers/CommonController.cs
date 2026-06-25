@@ -184,5 +184,11 @@ namespace WebEdit.Controllers
 
 			return View(model);
 		}
+
+		[Route("/policy")] public async Task<IActionResult> Policy() => View();
+		[Route("/terms")] public async Task<IActionResult> Terms() => View();
+
+
+
 	}
 }

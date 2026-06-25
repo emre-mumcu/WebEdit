@@ -1,5 +1,4 @@
 ﻿@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
-@* js de kullanımı: const token = document.querySelector('meta[name="csrf-token"]').content; *@
 
 <!doctype html>
 <html lang="tr">
@@ -7,77 +6,41 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>TinyMCE</title>
+	<title>Web Documents</title>
+
 	<base href="@Url.Content("~/")">
 	<meta name="csrf-token" content="@Antiforgery.GetAndStoreTokens(Context).RequestToken" />
+
 	<partial name="_Styles" />
 	@await RenderSectionAsync("Styles", required: false)
 </head>
 
 <body>
 
-	<div class="container-lg py-3">
-		<header>
-			<div class="d-flex flex-column flex-md-row align-items-center pb-3 mb-4 border-bottom">
-				<a href="/" class="link-body-emphasis text-decoration-none">
-					<span class="fs-2">Web Documents</span>
-					<partial name="_Theme" />
-					<partial name="_Bootswatch" />
-					<partial name="_PrismTheme" />
-					<partial name="_ImageLocation" />
-				</a>
-				<nav class="d-inline-flex mt-2 mt-md-0 ms-md-auto">
-					<a class="me-3 py-2 link-body-emphasis text-decoration-none" asp-controller="Home"
-					   asp-action="Index"><i class="bi bi-house-fill"></i> Home</a>
-					@if (User.Identity?.IsAuthenticated == true)
-					{
-						<a class="me-3 py-2 link-body-emphasis text-decoration-none" asp-controller="Tiny5"
-						   asp-action="Index"><i class="bi bi-file-earmark-richtext"></i> Documents</a>
-						
-						<a class="me-3 py-2 link-body-emphasis text-decoration-none" asp-controller="Common"
-						   asp-action="DbLogs"><i class="bi bi-table"></i> Logs</a>
+	<partial name="ImageBg" />
 
-						<a class="me-3 py-2 link-body-emphasis text-decoration-none" href="/logout"><i
-							class="bi bi-box-arrow-left"></i> Logout</a>
-						
-					}
-					else
-					{
-						<a class="me-3 py-2 link-body-emphasis text-decoration-none" href="/login"><i
-							class="bi bi-box-arrow-in-right"></i> Login</a>
-					}
-					
+	<div class="d-flex flex-column min-vh-100">
 
-
-
-				</nav>
+		<partial name="Header" />
+		<main class="flex-grow-1 d-flex align-items-stretch">
+			<div class="container-lg px-2 px-lg-5 d-flex flex-column flex-grow-1">
+				<div class="row flex-grow-1 h-100 my-4">
+					<div
+						class="col-12 bg-white bg-opacity-10 text-dark-50 p-5 d-flex align-items-center">
+						@RenderBody()
+					</div>
+				</div>
 			</div>
-		</header>
+		</main>
 
-		@RenderBody()
-
-		
+		<partial name="Footer" />
 
 	</div>
 
 	<partial name="_Scripts" />
+	<partial name="_ShowMessage" />
+
 	@await RenderSectionAsync("Scripts", required: false)
-
-			<partial name="_ShowMessage" />
-
-	@if (User.Identity?.IsAuthenticated == true)
-	{
-		<text>
-			<script>
-
-						document.addEventListener('DOMContentLoaded', function () {
-				//
-						});
-			</script>
-		</text>
-	}
-
-
 
 </body>
 

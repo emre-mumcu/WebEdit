@@ -38,11 +38,14 @@
 
 	const btnToActive = document.querySelector(`[data-bs-theme-value="${theme}"]`);
 
-	btnToActive.classList.add('active');
-    
-	btnToActive.setAttribute('aria-pressed', 'true');
+	if(btnToActive) {
+		btnToActive.classList.add('active');    
+		btnToActive.setAttribute('aria-pressed', 'true');		
+	}
 
-    const themeSwitcher = document.querySelector('#bd-theme');    
+	// const themeSwitcher = document.querySelector('#bd-theme');    
+
+    
   }
 
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {

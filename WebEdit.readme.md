@@ -1,7 +1,36 @@
+https://picsum.photos/
+https://picsum.photos/id/237/1200/800
+https://picsum.photos/1200/800
+https://fakestoreapi.com/products
+https://placehold.co/1200x800
+https://placehold.co/1200x800?text=Hero+Image
+https://dummyimage.com/1200x800/cccccc/000000
+https://picsum.photos/1920/1080
+https://picsum.photos/seed/hero-banner/1600/900
+
 dotnet list package --include-transitive
 dotnet list package --vulnerable
 
 ```cs
+
+
+	@if (User.Identity?.IsAuthenticated == true)
+	{
+		<text>
+			<script>
+
+						document.addEventListener('DOMContentLoaded', function () {
+				//
+						});
+			</script>
+		</text>
+	}
+
+
+
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+@* js de kullanımı: const token = document.querySelector('meta[name="csrf-token"]').content; *@
+
 /*
 
 // builder.Services.AddSingleton<IEncryptionService, AesGcmEncryptionService>();
