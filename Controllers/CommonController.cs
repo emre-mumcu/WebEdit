@@ -1,8 +1,10 @@
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using WebEdit.AppData;
 using WebEdit.Models;
+using WebEdit.ViewModels;
 
 namespace WebEdit.Controllers
 {
@@ -115,7 +117,7 @@ namespace WebEdit.Controllers
 			return View(model: vm);
 		}
 
-		
+
 		public async Task<IActionResult> DbLogDetail(Guid id)
 		{
 			var log = await db.Exceptions.FindAsync(id);
@@ -152,5 +154,21 @@ namespace WebEdit.Controllers
 		}
 
 
+		[Route("/error")]
+		public async Task<IActionResult> Error()
+		{
+			var exceptionFeature = HttpContext.Features.Get<IExceptionHandlerPathFeature>();
+
+			var exception = exceptionFeature?.Error ?? new Exception("Unknown Exception");
+
+			var model = new ErrorViewModel
+			{
+				Message = exception.Message,
+				StackTrace = exception.StackTrace,
+				Path = exceptionFeature?.Path ?? string.Empty
+			};
+
+			return View(model);
+		}
 	}
 }

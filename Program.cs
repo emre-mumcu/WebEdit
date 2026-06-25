@@ -15,8 +15,6 @@ builder.Services.AddSingleton<IEncryptionService, AesGcmEncryptionService>();
 
 builder.Services.AddDataProtection();
 
-builder.Services.AddHttpContextAccessor();
-
 builder.Services.AddSession(options =>
 {
 	options.IdleTimeout = TimeSpan.FromMinutes(30);

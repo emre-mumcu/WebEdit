@@ -4,13 +4,7 @@ using WebEdit.AppData.Entities;
 
 namespace WebEdit.Models;
 
-public class DbLogViewModel
-{
-	public List<DbLogEntity> Items { get; set; } = new();
 
-	public ModelFilter ModelFilter { get; set; } = new ();
-
-}
 
 public class ModelFilter
 {

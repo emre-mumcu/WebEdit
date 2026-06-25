@@ -1,0 +1,23 @@
+﻿<h2>Bir hata oluştu</h2>
+
+<p><strong>Message: </strong> @Model.Message</p>
+<p><strong>Path: </strong> @Model.Path</p>
+<p><strong>StackTrace: </strong></p>
+<pre>@Model.StackTrace</pre>
+
+<style>
+	pre {
+		white-space: pre-wrap;
+		word-wrap: break-word;		
+		@* overflow-wrap: break-word; *@
+		overflow-wrap: "anywhere";		
+	}
+
+	pre {
+		background-color: var(--bs-warning-bg-subtle);
+		border-radius: 10px;
+		padding: 20px 20px;
+	}
+
+
+</style>
