@@ -13,7 +13,7 @@ public class AppDbContext : DbContext
 	// public DbSet<WebDocEntity> WebDocs => Set<WebDocEntity>();
 	public DbSet<WebDocEntity> WebDocs { get; set; }
 	public DbSet<UserSetting> UserSettings { get; set; }
-	public DbSet<ExceptionLogEntity> Exceptions { get; set; }
+	public DbSet<DbLogEntity> Exceptions { get; set; }
 
 	public AppDbContext() { }
 
@@ -28,6 +28,7 @@ public class AppDbContext : DbContext
 
 #if DEBUG
 		optionsBuilder.EnableSensitiveDataLogging();
+		optionsBuilder.LogTo(Console.WriteLine, LogLevel.Information);
 #endif
 
 		if (!optionsBuilder.IsConfigured)

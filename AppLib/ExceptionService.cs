@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using WebEdit.AppData;
 using WebEdit.AppData.Entities;
 
@@ -14,18 +15,21 @@ public class EfExceptionLogger(AppDbContext _db) : IExceptionLogger
 	{
 		try
 		{
-			var log = new ExceptionLogEntity
+			var log = new DbLogEntity
 			{
+				UserId = context.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "undefined",
 				Path = context.Request.Path,
 				Method = context.Request.Method,
-				StatusCode = statusCode,
-
+				StatusCode = context.Response.StatusCode,
 				Message = ex.Message,
 				StackTrace = ex.ToString(),
+				InnerException = ex?.InnerException?.ToString(),
+				IsHandled = true,
+				ExceptionType = "",
 
-				CreatedBy = context.User?.Identity?.Name,
 				CreatedAt = DateTime.UtcNow,
-				ClientIP = context.Connection.RemoteIpAddress?.ToString()
+				CreatedBy = context.User?.Identity?.Name,				
+				ClientIP = context.GetClientIpAddress(),
 			};
 
 			_db.Exceptions.Add(log);

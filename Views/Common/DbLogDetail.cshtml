@@ -1,0 +1,111 @@
+@using WebEdit.AppData.Entities
+@model DbLogEntity
+@{
+    ViewData["Title"] = "Log Detayı";
+
+    string StatusBadge(int? code) => code switch
+    {
+        >= 500 => "danger",
+        >= 400 => "warning",
+        >= 300 => "info",
+        >= 200 => "success",
+        _      => "secondary"
+    };
+}
+
+<div class="container py-4" style="max-width: 900px;">
+
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h4 class="fw-semibold mb-0">
+                <i class="bi bi-bug-fill text-danger me-2"></i>Log Detayı
+            </h4>
+            <small class="text-muted font-monospace">@Model.Id</small>
+        </div>
+        <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left me-1"></i>Geri
+        </a>
+    </div>
+
+    {{!-- Özet rozetler --}}
+    <div class="d-flex flex-wrap gap-2 mb-4">
+        @if (Model.StatusCode.HasValue)
+        {
+            <span class="badge fs-6 bg-@StatusBadge(Model.StatusCode)">@Model.StatusCode</span>
+        }
+        @if (Model.Method != null)
+        {
+            <span class="badge fs-6 bg-primary">@Model.Method</span>
+        }
+        @if (Model.IsHandled)
+        {
+            <span class="badge fs-6 bg-success">İşlendi</span>
+        }
+        else
+        {
+            <span class="badge fs-6 bg-danger">İşlenmemiş</span>
+        }
+    </div>
+
+    <div class="card border-0 shadow-sm mb-3">
+        <div class="card-header bg-light fw-semibold py-2">Genel Bilgiler</div>
+        <div class="card-body p-0">
+            <table class="table table-sm table-striped mb-0">
+                <tbody>
+                    <tr><th style="width:180px">Tarih</th><td>@Model.CreatedAt.ToString("dd.MM.yyyy HH:mm:ss")</td></tr>
+                    <tr><th>Kullanıcı ID</th><td>@(Model.UserId ?? "-")</td></tr>
+                    <tr><th>IP</th><td>@(Model.ClientIP ?? "-")</td></tr>
+                    <tr><th>Path</th><td class="font-monospace">@(Model.Path ?? "-")</td></tr>
+                    <tr><th>Query String</th><td class="font-monospace small">@(Model.QueryString ?? "-")</td></tr>
+                    <tr><th>Exception Türü</th><td>@(Model.ExceptionType ?? "-")</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm mb-3">
+        <div class="card-header bg-light fw-semibold py-2">Hata Mesajı</div>
+        <div class="card-body">
+            <p class="mb-0">@(Model.Message ?? "-")</p>
+        </div>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(Model.InnerException))
+    {
+        <div class="card border-0 shadow-sm mb-3">
+            <div class="card-header bg-light fw-semibold py-2">Inner Exception</div>
+            <div class="card-body">
+                <pre class="mb-0 small text-danger-emphasis" style="white-space:pre-wrap;word-break:break-all;">@Model.InnerException</pre>
+            </div>
+        </div>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(Model.StackTrace))
+    {
+        <div class="card border-0 shadow-sm mb-3">
+            <div class="card-header bg-light fw-semibold py-2 d-flex justify-content-between align-items-center">
+                Stack Trace
+                <button class="btn btn-sm btn-outline-secondary" id="copyStack">
+                    <i class="bi bi-clipboard me-1"></i>Kopyala
+                </button>
+            </div>
+            <div class="card-body">
+                <pre id="stackTrace" class="mb-0 small" style="white-space:pre-wrap;word-break:break-all;max-height:400px;overflow-y:auto;">@Model.StackTrace</pre>
+            </div>
+        </div>
+    }
+
+</div>
+
+@section Scripts {
+<script>
+    document.getElementById('copyStack')?.addEventListener('click', () => {
+        const text = document.getElementById('stackTrace').innerText;
+        navigator.clipboard.writeText(text).then(() => {
+            const btn = document.getElementById('copyStack');
+            btn.innerHTML = '<i class="bi bi-check-lg me-1"></i>Kopyalandı';
+            setTimeout(() => btn.innerHTML = '<i class="bi bi-clipboard me-1"></i>Kopyala', 2000);
+        });
+    });
+</script>
+}

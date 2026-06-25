@@ -30,14 +30,18 @@
 					<a class="me-3 py-2 link-body-emphasis text-decoration-none" asp-controller="Home" asp-action="Index">Home</a>
 					@if (User.Identity?.IsAuthenticated == true)
 					{
-						<a class="me-3 py-2 link-body-emphasis text-decoration-none" href="/dev-logout">Logout</a>
+						<a class="me-3 py-2 link-body-emphasis text-decoration-none" asp-controller="Tiny5" asp-action="Index">Documents</a>
+						
+						<a class="me-3 py-2 link-body-emphasis text-decoration-none" asp-controller="Common" asp-action="DbLogs">Logs</a>
+
+						<a class="me-3 py-2 link-body-emphasis text-decoration-none" href="/logout">Logout</a>
 						
 					}
 					else
 					{
-						<a class="me-3 py-2 link-body-emphasis text-decoration-none" href="/dev-login">Login</a>
+						<a class="me-3 py-2 link-body-emphasis text-decoration-none" href="/login">Login</a>
 					}
-					<a class="me-3 py-2 link-body-emphasis text-decoration-none" asp-controller="Tiny5" asp-action="Index">Documents</a>
+					
 
 
 

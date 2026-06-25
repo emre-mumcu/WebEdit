@@ -1,0 +1,354 @@
+@using WebEdit.Models
+
+@model DbLogViewModel
+
+@{
+    string SortLink(string col)
+    {
+        bool isActive = Model.ModelFilter.SortBy == col;
+        bool desc     = isActive && !Model.ModelFilter.SortDesc;
+        return $"?{BuildQuery(sortBy: col, sortDesc: desc, page: 1)}";
+    }
+
+    string SortIcon(string col)
+    {
+		if (Model.ModelFilter.SortBy != col) return "<i class=\"bi bi-arrow-down-up text-muted opacity-50\"></i>";
+		else return Model.ModelFilter.SortDesc
+            ? "<i class=\"bi bi-arrow-down text-primary\"></i>"
+            : "<i class=\"bi bi-arrow-up text-primary\"></i>";
+    }
+
+    string BuildQuery(string? search = null, int? statusCode = null, string? isHandled = null,
+                      string? method = null, string? dateFrom = null, string? dateTo = null,
+                      string? sortBy = null, bool? sortDesc = null, int? page = null, int? pageSize = null)
+    {
+		var f = Model.ModelFilter;
+
+        var qs = new System.Collections.Specialized.NameValueCollection();
+
+        void Add(string k, string? v) { 
+			if (!string.IsNullOrWhiteSpace(v)) qs[k] = v; 
+		}
+
+		Add("SearchText", search ?? f.SearchText);
+        Add("StatusCode", (statusCode ?? f.StatusCode)?.ToString());
+        Add("Method",     method     ?? f.Method);
+		Add("StartDate", dateFrom ?? f.StartDate?.ToString("yyyy-MM-dd"));
+		Add("EndDate", dateTo ?? f.EndDate?.ToString("yyyy-MM-dd"));
+
+        var handled = isHandled ?? f.IsHandled?.ToString().ToLower();
+		Add("IsHandled", handled);
+
+        qs["SortBy"]   = sortBy   ?? f.SortBy;
+		qs["SortDesc"] = (sortDesc ?? f.SortDesc).ToString().ToLower();
+		qs["CurrentPage"] = (page ?? Model.ModelFilter.CurrentPage).ToString();
+		qs["PageSize"] = (pageSize ?? Model.ModelFilter.PageSize).ToString();
+
+        return string.Join("&", qs.AllKeys.Select(k => $"{k}={Uri.EscapeDataString(qs[k]!)}"));
+    }
+
+    string StatusBadge(int? code) => code switch
+    {
+        >= 500 => "danger",
+        >= 400 => "warning",
+        >= 300 => "info",
+        >= 200 => "success",
+        _      => "secondary"
+    };
+}
+
+<div class="container-fluid py-4">
+
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <div>
+            <h4 class="mb-0 fw-semibold">
+                <i class="bi bi-bug-fill text-danger me-2"></i>Veritabanı Logları
+            </h4>
+            <small class="text-muted">Toplam <strong>@Model.ModelFilter.TotalCount</strong> kayıt</small>
+        </div>
+    </div>
+
+    <div class="card border-2 rounded-4 shadow-sm mb-4">
+
+        <div class="card-body">
+
+            <form asp-controller="Common" asp-action="DbLogs" method="GET">
+
+                <div class="row g-2 align-items-end">
+
+                    <div class="col-12 col-md-3">
+                        <label class="form-label form-label-sm text-muted mb-1">Aranan</label>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text"><i class="bi bi-search"></i></span>                            
+							<input asp-for="ModelFilter.SearchText" class="form-control"  placeholder="..." />
+						</div>
+                    </div>
+
+					<div class="col-12 col-md-3">
+						<label class="form-label form-label-sm text-muted mb-1">Path</label>
+						<div class="input-group input-group-sm">
+							<span class="input-group-text"><i class="bi bi-search"></i></span>
+							<input asp-for="ModelFilter.Path" class="form-control" placeholder="..." />
+						</div>
+					</div>
+
+					<div class="col-6 col-md-3">
+						<label class="form-label form-label-sm text-muted mb-1">Method</label>
+						<select asp-for="ModelFilter.SelectedMethod" asp-items="Model.ModelFilter.MethodList" class="form-select form-select-sm">
+							<option value="">Tümü</option>
+						</select>
+					</div>	
+
+					<div class="col-6 col-md-3">
+						<label class="form-label form-label-sm text-muted mb-1">Status</label>
+						<select asp-for="ModelFilter.StatusCode" asp-items="Model.ModelFilter.StatusCodeList" class="form-select form-select-sm">
+							<option value="">Tümü</option>
+						</select>
+					</div>
+
+					<div class="col-6 col-md-3">
+                        <label class="form-label form-label-sm text-muted mb-1">Başlangıç</label>
+                        <input asp-for="ModelFilter.StartDate" class="form-control form-control-sm" />
+                    </div>
+                    
+					<div class="col-6 col-md-3">
+						<label class="form-label form-label-sm text-muted mb-1">Bitiş</label>
+						<input asp-for="ModelFilter.EndDate" class="form-control form-control-sm" />
+					</div>
+
+                    <div class="col-6 col-md-2">
+                        <label class="form-label form-label-sm text-muted mb-1">Sayfa / Kayıt</label>
+                        <select asp-for="ModelFilter.PageSize" class="form-select form-select-sm">
+                            @foreach (var ps in new[] { 10, 20, 50, 100 })
+                            {
+								<option value="@ps" selected="@(Model.ModelFilter.PageSize == ps)">@ps</option>
+                            }
+                        </select>
+                    </div>
+
+					@Html.HiddenFor(m => m.ModelFilter.SortBy)
+					@Html.HiddenFor(m => m.ModelFilter.SortDesc)
+
+                    <div class="col-12 col-md-auto d-flex gap-2">
+                        <button type="submit" class="btn btn-primary btn-sm px-3">
+                            <i class="bi bi-funnel-fill me-1"></i>Uygula
+                        </button>
+                        <a asp-action="DbLogs" class="btn btn-outline-secondary btn-sm px-3">
+                            <i class="bi bi-x-lg me-1"></i>Temizle
+                        </a>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+
+        <div class="table-responsive">
+
+            <table class="table table-hover align-middle mb-0">
+
+                <thead class="table-light border-bottom">
+                    <tr>
+                        <th scope="col" style="width:40px">#</th>
+                        <th scope="col">
+							<a href="@SortLink("path")"
+							   class="text-decoration-none text-dark d-flex align-items-center gap-1">
+                                Path @Html.Raw(SortIcon("path"))
+                            </a>
+                        </th>
+                        <th scope="col">
+                            <a href="@SortLink("method")" class="text-decoration-none text-dark d-flex align-items-center gap-1">
+                                Method @Html.Raw(SortIcon("method"))
+                            </a>
+                        </th>
+                        <th scope="col">
+                            <a href="@SortLink("statusCode")" class="text-decoration-none text-dark d-flex align-items-center gap-1">
+                                Status @Html.Raw(SortIcon("statusCode"))
+                            </a>
+                        </th>
+                        <th scope="col">Exception Type</th>
+                        <th scope="col">Message</th>
+                        <th scope="col">
+                            <a href="@SortLink("isHandled")" class="text-decoration-none text-dark d-flex align-items-center gap-1">
+                                Handled? @Html.Raw(SortIcon("isHandled"))
+                            </a>
+                        </th>
+                        <th scope="col">
+                            <a href="@SortLink("createdAt")" class="text-decoration-none text-dark d-flex align-items-center gap-1">
+                                Date @Html.Raw(SortIcon("createdAt"))
+                            </a>
+                        </th>
+                        <th scope="col" class="text-end">Options</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (!Model.Items.Any())
+                    {
+                        <tr>
+                            <td colspan="9" class="text-center py-5 text-muted">
+                                <i class="bi bi-inbox fs-3 d-block mb-2"></i>
+                                Kayıt bulunamadı.
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        int rowNum = (Model.ModelFilter.CurrentPage - 1) * Model.ModelFilter.PageSize + 1;
+
+                        foreach (var item in Model.Items)
+                        {
+                            <tr>
+                                <td class="text-muted small">@rowNum</td>
+                                <td class="font-monospace small text-truncate" style="max-width:180px" title="@item.Path">
+                                    @item.Path
+                                </td>
+                                <td>
+                                    @if (item.Method != null)
+                                    {
+                                        var mc = item.Method switch { "GET" => "success", "POST" => "primary", "PUT" => "warning", "DELETE" => "danger", _ => "secondary" };
+                                        <span class="badge bg-@mc">@item.Method</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (item.StatusCode.HasValue)
+                                    {
+                                        <span class="badge bg-@StatusBadge(item.StatusCode)">@item.StatusCode</span>
+                                    }
+                                </td>
+                                <td class="small text-truncate" style="max-width:140px" title="@item.ExceptionType">
+                                    @item.ExceptionType
+                                </td>
+                                <td class="small text-truncate" style="max-width:220px" title="@item.Message">
+                                    @item.Message
+                                </td>
+                                <td>
+                                    @if (item.IsHandled)
+                                    {
+                                        <span class="badge bg-success-subtle text-success border border-success-subtle">
+                                            <i class="bi bi-check-circle-fill me-1"></i>Yes
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle" id="badge-@item.Id">
+                                            <i class="bi bi-exclamation-circle-fill me-1"></i>No
+                                        </span>
+                                    }
+                                </td>
+                                <td class="small text-nowrap text-muted">
+                                    @item.CreatedAt.ToString("dd.MM.yyyy HH:mm")
+                                </td>
+                                <td class="text-end">
+                                    <div class="d-flex justify-content-end gap-1">
+										<a href="@Url.Action("DbLogDetail", new { id = item.Id })"
+                                           class="btn btn-sm btn-outline-secondary" title="Detay">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        @if (!item.IsHandled)
+                                        {
+                                            <button type="button"
+                                                    class="btn btn-sm btn-outline-success btn-mark-handled"
+                                                    title="İşlendi olarak işaretle"
+                                                    data-id="@item.Id">
+                                                <i class="bi bi-check-lg"></i>
+                                            </button>
+                                        }
+                                        <form asp-action="Delete" asp-route-id="@item.Id" method="post"
+                                              class="d-inline form-delete">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Sil">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+							
+                            rowNum++;
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @if (Model.ModelFilter.TotalPages > 1)
+        {
+            <div class="card-footer bg-transparent d-flex flex-column flex-sm-row align-items-center justify-content-between gap-2 py-3">
+                <small class="text-muted">
+					Sayfa <strong>@Model.ModelFilter.CurrentPage</strong> / <strong>@Model.ModelFilter.TotalPages</strong>
+					&nbsp;·&nbsp; Toplam <strong>@Model.ModelFilter.TotalCount</strong> kayıt
+                </small>
+                <nav>
+                    <ul class="pagination pagination-sm mb-0">
+
+						<li class="page-item @(!Model.ModelFilter.HasPrev ? "disabled" : "")">
+                            <a class="page-link" href="@Url.Action("DbLogs", "Common")?@BuildQuery(page: 1)">«</a>
+                        </li>
+						
+						<li class="page-item @(!Model.ModelFilter.HasPrev ? "disabled" : "")">
+							<a class="page-link"
+							   href="@Url.Action("DbLogs", "Common")?@BuildQuery(page: Model.ModelFilter.CurrentPage - 1)">‹</a>
+                        </li>
+
+                        @{
+							int start = Math.Max(1, Model.ModelFilter.CurrentPage - 2);
+							int end = Math.Min(Model.ModelFilter.TotalPages, Model.ModelFilter.CurrentPage + 2);
+                        }
+                        @for (int p = start; p <= end; p++)
+                        {
+							<li class="page-item @(p == Model.ModelFilter.CurrentPage ? "active" : "")">
+								<a class="page-link" href="@Url.Action("DbLogs", "Common")?@BuildQuery(page: p)">@p</a>
+                            </li>
+                        }
+
+						<li class="page-item @(!Model.ModelFilter.HasNext ? "disabled" : "")">
+							<a class="page-link"
+							   href="@Url.Action("DbLogs", "Common")?@BuildQuery(page: Model.ModelFilter.CurrentPage + 1)">›</a>
+                        </li>
+						<li class="page-item @(!Model.ModelFilter.HasNext ? "disabled" : "")">
+							<a class="page-link"
+							   href="@Url.Action("DbLogs", "Common")?@BuildQuery(page: Model.ModelFilter.TotalPages)">»</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+<script>
+
+    document.querySelectorAll('.form-delete').forEach(form => {
+        form.addEventListener('submit', e => {
+            if (!confirm('Bu kaydı silmek istediğinize emin misiniz?')) e.preventDefault();
+        });
+    });
+
+    // İşlendi olarak işaretle (AJAX)
+    const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+
+    document.querySelectorAll('.btn-mark-handled').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            const id = btn.dataset.id;
+            try {
+                const res = await fetch(`/ExceptionLog/MarkHandled/${id}`, {
+                    method: 'POST',
+                    headers: { 'RequestVerificationToken': token }
+                });
+                if (res.ok) {
+                    const badge = document.getElementById(`badge-${id}`);
+                    if (badge) {
+                        badge.className = 'badge bg-success-subtle text-success border border-success-subtle';
+                        badge.innerHTML = '<i class="bi bi-check-circle-fill me-1"></i>İşlendi';
+                    }
+                    btn.remove();
+                }
+            } catch { alert('İşlem başarısız.'); }
+        });
+    });
+</script>
+}

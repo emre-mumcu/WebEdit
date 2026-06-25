@@ -2,7 +2,7 @@ using System;
 
 namespace WebEdit.AppData.Entities;
 
-public class ExceptionLogEntity: BaseEntity
+public class DbLogEntity: BaseEntity
 {
 	public string? UserId { get; set; }
 	public string? Path { get; set; }
