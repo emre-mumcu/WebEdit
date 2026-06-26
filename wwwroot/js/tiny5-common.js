@@ -21,7 +21,7 @@ const tinyBaseConfig = {
 
 	content_css: isDarkMode() ? 'dark' : 'default',
 
-	height: '600px',
+	height: '750px',
 
 	// Editör içerisindeki içeriğe TinyMCE'nin hazır "document" stilini uygular. Bu stil Word benzeri bir görünüm sağlar. Alternatifleri: 'default' / 'dark' / false
 	content_css: 'document',

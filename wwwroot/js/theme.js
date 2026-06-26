@@ -60,12 +60,12 @@
 
     document.querySelectorAll('[data-bs-theme-value]')
       .forEach(toggle => {
-        toggle.addEventListener('click', () => {
-          const theme = toggle.getAttribute('data-bs-theme-value');
-          setStoredTheme(theme);
-          setTheme(theme);
-          showActiveTheme(theme, true);
-		  location.reload();
+        toggle.addEventListener('click', (e) => {
+          	const theme = toggle.getAttribute('data-bs-theme-value');
+          	setStoredTheme(theme);
+          	setTheme(theme);
+          	showActiveTheme(theme, true);
+		  	//location.reload();
         })
       })
   })

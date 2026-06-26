@@ -1,0 +1,111 @@
+﻿@using System.Text.Json
+@using Microsoft.AspNetCore.Authentication
+
+@{
+	var userInfo = new
+	{
+		IsAuthenticated = User.Identity?.IsAuthenticated,
+		Name = User.Identity?.Name,
+		Claims = User.Claims.Select(c => new
+		{
+			c.Type,
+			c.Value
+		})
+	};
+
+	var json = JsonSerializer.Serialize(
+		userInfo,
+		new JsonSerializerOptions
+		{
+			WriteIndented = true
+		});
+}
+
+<style>
+	#v-pills-tab {
+		width: 220px;
+	}
+
+	#v-pills-tab .nav-link {
+		width: 100%;
+		text-align: left;
+		border-radius: 6px;
+	}	
+</style>
+
+<div class="col-12 bg-body p-5  d-flex flex-column" style="height: 100%;">
+
+	<div class="d-flex flex-grow-1 overflow-hidden min-h-0">
+
+		<!-- SOL TAB MENÜ -->
+		<div class="nav flex-column nav-pills mt-1 me-4 pe-4 border-end overflow-auto h-100" id="v-pills-tab"
+			 role="tablist">
+
+			<button class="nav-link active" data-bs-toggle="pill" data-bs-target="#tab1">
+				User
+			</button>
+
+			<button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab2">
+				Theme
+			</button>
+
+			<button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab3">
+				Syntax Highlighting
+			</button>
+
+			<button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab4">
+				Image Save Location
+			</button>
+
+		</div>
+
+		<!-- SAĞ İÇERİK -->
+		<div class="tab-content flex-grow-1 overflow-auto" style="min-height:0;">
+
+			<div class="tab-pane fade show active" id="tab1">
+
+				<p class="fs-5 text-primary "><i class="bi bi-person-vcard-fill"></i> User Details</p>
+				
+				<pre><code class="language-json" style="font-size: 12px;">@json</code></pre>
+
+				@{
+					var provider = Context.RequestServices
+					.GetRequiredService<IAuthenticationSchemeProvider>();
+
+					var schemes = await provider.GetAllSchemesAsync();
+
+					<p class="fs-5 text-primary mt-4"><i class="bi bi-gear-fill"></i> Authentication Schemes</p>
+
+					foreach (AuthenticationScheme scheme in schemes)
+					{
+						<pre><code class="language-csharp">@scheme</code></pre>
+					}
+				}
+
+			</div>
+
+			<div class="tab-pane fade" id="tab2">
+
+				<h1>Page Theme Selection</h1>
+				
+				<partial name="_Theme" />
+
+				<h3>Page UI Style Selection</h3>
+				<partial name="_Bootswatch" />
+
+			</div>
+
+			<div class="tab-pane fade" id="tab3">
+				<partial name="_PrismTheme" />
+			</div>
+
+			<div class="tab-pane fade" id="tab4">
+				<partial name="_ImageLocation" />
+			</div>
+
+		</div>
+
+	</div>
+
+</div>
+
