@@ -19,8 +19,8 @@ public class AppDbContext : DbContext
 	
 	// public DbSet<WebDocEntity> WebDocs => Set<WebDocEntity>();
 	public DbSet<WebDocEntity> WebDocs { get; set; }
-	public DbSet<UserSetting> UserSettings { get; set; }
 	public DbSet<DbLogEntity> DbLogs { get; set; }
+	public DbSet<UserEntity> Users { get; set; }
 
 	public AppDbContext() { }
 

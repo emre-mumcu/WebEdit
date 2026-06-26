@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebEdit.Controllers
@@ -45,7 +46,11 @@ namespace WebEdit.Controllers
 		public async Task<IActionResult> AccessDenied() => View();
 		
 			
-		
+		[Authorize(Roles = "User")]	
+		public async Task<IActionResult> CreateProfile()
+        {
+            return View();
+        }
 
 	}
 }
